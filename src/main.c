@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "game.h"
 
 int main(void) {
   InitWindow(800, 600, "Enduro");
