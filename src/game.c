@@ -15,6 +15,7 @@ GameState *init_game(void){
     state->enemies = NULL;
 
     InitPlayer(state->player);
+    InitTrack(state->track);
 
     return state;
 }
@@ -38,9 +39,8 @@ void update_game(GameState *state, float dt){
             break;
 
         case STATE_PLAYING: {
-            float currentCurve = GetTrackCurve(state->player->z);
 
-            UpdatePlayer(state->player, currentCurve);
+            UpdatePlayer(state->player);
             }
             break;
 
