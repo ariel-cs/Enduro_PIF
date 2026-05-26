@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include "raylib.h"
 #include "game.h"
 #include "player.h"
+#include "track.h"
 
 GameState *init_game(void){
     GameState *state = (GameState *)malloc(sizeof(GameState));
@@ -11,7 +11,7 @@ GameState *init_game(void){
     state->elapsed_time = 0.0f;
     state->is_paused = false;
     state->player = (Player *)malloc(sizeof(Player));
-    state->track = NULL;
+    state->track = (Track *)malloc(sizeof(Track));
     state->enemies = NULL;
 
     InitPlayer(state->player);
@@ -37,8 +37,11 @@ void update_game(GameState *state, float dt){
         case STATE_TITLE:
             break;
 
-        case STATE_PLAYING:
-            UpdatePlayer(state->player, 0.0f);
+        case STATE_PLAYING: {
+            float currentCurve = GetTrackCurve(state->player->z);
+
+            UpdatePlayer(state->player, currentCurve);
+            }
             break;
 
         default:break;
@@ -48,6 +51,9 @@ void update_game(GameState *state, float dt){
 void free_game(GameState *state){
     if (state->player != NULL) {
         free(state->player);
+    }
+    if (state->track != NULL) {
+        free(state->track);
     }
 
     free(state);
