@@ -27,14 +27,14 @@ void UpdatePlayer(struct Player *player){
     }
 
     player->z += player->speed;
-    if (player->speed > 0.001f) {
+    if (player->speed > 0.0f) {
         if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) player->x -= 0.035f;
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) player->x += 0.035f;
     }
 
 
-    if(player->x < -0.90f) player->x = -0.90f;
-    if(player->x > 0.90f) player->x = 0.90f;
+    if(player->x < -0.85f) player->x = -0.85f;
+    if(player->x > 0.85f) player->x = 0.85f;
 }
 
 void DrawPlayer(struct Player *player){
