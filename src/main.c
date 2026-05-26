@@ -45,15 +45,15 @@ int main(void) {
     else if (game->current_state == STATE_TITLE) {
         ClearBackground(BLACK);
         DrawText("Enduro", 340, 280, 40, WHITE);
-        DrawText("PRESSIONE ENTER", SCREEN_WIDTH/2 - 80, 320, 16, GRAY);
+        DrawText("PRESSIONE ENTER", 340, 320, 16, GRAY);
     }
     else if (game->current_state == STATE_MENU) {
         ClearBackground(BLACK);
         DrawText("MENU PRINCIPAL", 280, 150, 30, RED);
         Color colorOpt1 = (menuSelectdOption == 0) ? YELLOW : WHITE;
         Color colorOpt2 = (menuSelectdOption == 1) ? YELLOW : GRAY;
-        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 240, 280, 22, colorOpt1);
-        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 1) ? ">" : " "), 240, 340, 22, colorOpt2);
+        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 280, 280, 22, colorOpt1);
+        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 1) ? ">" : " "), 280, 340, 22, colorOpt2);
     }
     else if (game->current_state == STATE_PLAYING) {
         ClearBackground(RAYWHITE);

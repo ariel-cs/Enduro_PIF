@@ -30,7 +30,7 @@ void update_game(GameState *state, float dt){
     switch (state->current_state) {
         case STATE_LOGO:
             state->logo_timer +=dt;
-            if (state->logo_timer >= 3.0f){
+            if (state->logo_timer >= 2.0f){
                 change_state(state, STATE_TITLE);
             }
             break;
