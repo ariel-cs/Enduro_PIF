@@ -1,6 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
- 
+
 #include <stdbool.h>
 
 // Isso aqui é literalmente a maquina de estados do jogo.
@@ -10,6 +10,8 @@ typedef struct EnemyList EnemyList;
 typedef struct Track Track;
 
 typedef enum {
+    STATE_LOGO,
+    STATE_TITLE,
     STATE_MENU,
     STATE_PLAYING,
     STATE_GAME_OVER,
@@ -27,10 +29,11 @@ typedef struct {
     int cars_passed_today;
     int cars_passed_total;
     float elapsed_time;
+    float logo_timer;
     bool is_paused;
     int top_score;
 } GameState;
- 
+
 // API da maquina de estados
 GameState *init_game(void);
 void update_game(GameState *state, float dt);
