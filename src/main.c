@@ -42,6 +42,7 @@ int main(void) {
         int logoX = (SCREEN_WIDTH / 2) - (logotex.width / 2);
         int logoY = (SCREEN_HEIGHT / 2) - (logotex.height / 2);
         DrawTexture(logotex, logoX, logoY, WHITE);
+        DrawText("APRESENTA", 330, 350, 24, GRAY);
     }
     else if (game->current_state == STATE_TITLE) {
         ClearBackground(BLACK);

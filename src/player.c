@@ -6,14 +6,14 @@ void InitPlayer(struct Player *player){
     player->z = 0.0f;
     player->x = 0.0f;
     player->speed = 0.0f;
-    player->maxSpeed = 0.8f;
+    player->maxSpeed = 1.0f;
     player->acele = 0.002f;
     player->decele = 0.005f;
     player->friction = 0.0002f;
 }
 
 void UpdatePlayer(struct Player *player){
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
+    if (IsKeyDown(KEY_SPACE)) {
         player->speed += player->acele;
         if (player->speed > player->maxSpeed) player->speed = player->maxSpeed;
     }
@@ -34,8 +34,8 @@ void UpdatePlayer(struct Player *player){
     }
 
 
-    if(player->x < -0.85f) player->x = -0.85f;
-    if(player->x > 0.85f) player->x = 0.85f;
+    if(player->x < -0.77f) player->x = -0.77f;
+    if(player->x > 0.77f) player->x = 0.77f;
 }
 
 void DrawPlayer(struct Player *player){

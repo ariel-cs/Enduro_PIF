@@ -15,14 +15,14 @@ void InitTrack(struct Track *track){
             float t = (float)(TRACK_LENGTH/2.4 - i) / 300.0f;
             track->segments[i].curve = t * 1.5f;
         }
-        else if (i < TRACK_LENGTH/1.8) track->segments[i].curve = 0.0f;
-        else if (i < TRACK_LENGTH/1.6){
-            float t = (float)(i - TRACK_LENGTH/1.8) / 300.0f;
+        else if (i < TRACK_LENGTH/1.818) track->segments[i].curve = 0.0f;
+        else if (i < TRACK_LENGTH/1.666){
+            float t = (float)(i - TRACK_LENGTH/1.818) / 300.0f;
             track->segments[i].curve = t * -1.8f;
         }
-        else if (i < TRACK_LENGTH/1.28) track->segments[i].curve = -1.8f;
+        else if (i < TRACK_LENGTH/1.276) track->segments[i].curve = -1.8f;
         else if (i < TRACK_LENGTH/1.2){
-            float t = (float)(TRACK_LENGTH/1.2 - i);
+            float t = (float)(TRACK_LENGTH/1.2 - i) / 300.0f;
             track->segments[i].curve = t * -1.8f;
         }
         else track->segments[i].curve = 0.0f;
