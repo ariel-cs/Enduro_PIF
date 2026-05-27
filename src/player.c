@@ -8,7 +8,7 @@ void InitPlayer(struct Player *player){
     player->speed = 0.0f;
     player->maxSpeed = 0.8f;
     player->acele = 0.002f;
-    player->decele = 0.0005f;
+    player->decele = 0.005f;
     player->friction = 0.0002f;
 }
 

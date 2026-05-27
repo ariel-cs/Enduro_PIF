@@ -5,10 +5,26 @@
 void InitTrack(struct Track *track){
     for (int i = 0; i < TRACK_LENGTH; i++) {
 
-        if (i < 1000) track->segments[i].curve = 0.0f;
-        else if (i < 2500) track->segments[i].curve = 1.5f;
-        else if (i < 3500) track->segments[i].curve = 0.0f;
-        else if (i < 5000) track->segments[i].curve = -1.8f;
+        if (i < 800) track->segments[i].curve = 0.0f;
+        else if (i < 1100){
+            float t = (float)(i - 800) / 300.0f;
+            track->segments[i].curve = t * 1.5f;
+        }
+        else if (i < 2200) track->segments[i].curve = 1.5f;
+        else if (i < 2500){
+            float t = (float)(2500 - i) / 300.0f;
+            track->segments[i].curve = t * 1.5f;
+        }
+        else if (i < 3300) track->segments[i].curve = 0.0f;
+        else if (i < 3600){
+            float t = (float)(i - 3300) / 300.0f;
+            track->segments[i].curve = t * -1.8f;
+        }
+        else if (i < 4700) track->segments[i].curve = -1.8f;
+        else if (i < 5000){
+            float t = (float)(5000 - i);
+            track->segments[i].curve = t * -1.8f;
+        }
         else track->segments[i].curve = 0.0f;
 
         int segmentGroup = i / 2;
