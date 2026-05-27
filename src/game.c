@@ -1,9 +1,13 @@
 #include <stdlib.h>
+#include <time.h>
 #include "game.h"
 #include "player.h"
 #include "track.h"
+#include "enemy.h"
 
 GameState *init_game(void){
+    srand((unsigned int)time(NULL));
+
     GameState *state = (GameState *)malloc(sizeof(GameState));
 
     state->current_state = STATE_LOGO;
@@ -12,7 +16,24 @@ GameState *init_game(void){
     state->is_paused = false;
     state->player = (Player *)malloc(sizeof(Player));
     state->track = (Track *)malloc(sizeof(Track));
-    state->enemies = NULL;
+    state->enemies = (EnemyList *)malloc(sizeof(EnemyList));
+    //Simplesmente não tem inimigo nas primeiras 1000 metros então isso aqui conserta!
+    InitEnemyList(state->enemies);
+    for (int i = 0; i < 18; i++) {
+        float z = 100.0f + (rand() % 1100);  // 100 a 1200
+        float x = ((rand() % 1601) - 800) / 1000.0f;
+        float speed = 0.05f + ((rand() % 26) / 100.0f);
+        Color color;
+        int colorChoice = rand() % 5;
+        switch (colorChoice) {
+            case 0: color = BLUE; break;
+            case 1: color = DARKGREEN; break;
+            case 2: color = PURPLE; break;
+            case 3: color = ORANGE; break;
+            default: color = MAROON; break;
+        }
+        SpawnEnemyAt(state->enemies, z, x, speed, color);
+    }
 
     InitPlayer(state->player);
     InitTrack(state->track);
@@ -41,6 +62,7 @@ void update_game(GameState *state, float dt){
         case STATE_PLAYING: {
 
             UpdatePlayer(state->player);
+            UpdateEnemies(state->enemies, dt, state->player->z);
             }
             break;
 
@@ -54,6 +76,10 @@ void free_game(GameState *state){
     }
     if (state->track != NULL) {
         free(state->track);
+    }
+    if (state->enemies != NULL) {
+        FreeEnemyList(state->enemies);
+        free(state->enemies);
     }
 
     free(state);

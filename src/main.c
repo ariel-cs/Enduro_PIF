@@ -3,6 +3,7 @@
 #include "game.h"
 #include "player.h"
 #include "track.h"
+#include "enemy.h"
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Enduro");
@@ -59,6 +60,7 @@ int main(void) {
         ClearBackground(RAYWHITE);
         DrawTrack(game->track,game->player);
         DrawPlayer(game->player);
+        DrawEnemies(game->enemies, game->player, game->track);
         DrawText(TextFormat("KM/H: %.0f", game->player->speed * 220.0f), 20, 20, 20, BLACK);
         DrawText(TextFormat("DISTANCIA: %.0f M", game->player->z), 20, 50, 20, BLACK);
     }

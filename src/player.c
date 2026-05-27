@@ -6,10 +6,10 @@ void InitPlayer(struct Player *player){
     player->z = 0.0f;
     player->x = 0.0f;
     player->speed = 0.0f;
-    player->maxSpeed = 1.0f;
-    player->acele = 0.005f;
-    player->decele = 0.008f;
-    player->friction = 0.002f;
+    player->maxSpeed = 0.8f;
+    player->acele = 0.002f;
+    player->decele = 0.0005f;
+    player->friction = 0.0002f;
 }
 
 void UpdatePlayer(struct Player *player){

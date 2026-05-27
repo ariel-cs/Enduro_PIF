@@ -32,7 +32,7 @@ void DrawTrack(struct Track *track,struct Player *player){
     for (int y = SCREEN_HEIGHT; y >= HORIZON; y--) {
         float scale = (float)(y - HORIZON) / HORIZON;
         float dynamicY = (y == HORIZON) ? 0.1f: (float)(y - HORIZON);
-        float projectZ = 250.0f / dynamicY;
+        float projectZ = 800.0f / dynamicY;
 
         int trackIndex = ((int)(player->z + projectZ)) % TRACK_LENGTH;
 
