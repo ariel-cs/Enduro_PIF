@@ -5,23 +5,26 @@
 #include "player.h"
 #include "track.h"
 
-struct Enemy {
+typedef struct Enemy {
     float z;
     float x;
     float speed;
+    int faixa;
+    bool passou;
     Color color;
     struct Enemy *next;
-};
+} Enemy;
 
-struct EnemyList {
+typedef struct EnemyList {
     struct Enemy *head;
     int count;
-};
+} EnemyList;
 
 void InitEnemyList(struct EnemyList *list);
 void SpawnEnemy(struct EnemyList *list, float playerZ);
 void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed, Color color);
 void UpdateEnemies(struct EnemyList *list, float dt, float playerZ);
+int CountPassedEnemies(struct EnemyList *list, float playerZ);
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track);
 void FreeEnemyList(struct EnemyList *list);
 

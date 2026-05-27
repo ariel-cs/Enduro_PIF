@@ -63,6 +63,7 @@ int main(void) {
         DrawEnemies(game->enemies, game->player, game->track);
         DrawText(TextFormat("KM/H: %.0f", game->player->speed * 220.0f), 20, 20, 20, BLACK);
         DrawText(TextFormat("DISTANCIA: %.0f M", game->player->z), 20, 50, 20, BLACK);
+        DrawText(TextFormat("PONTOS: %d", game->cars_passed_total), 20, 80, 20, BLACK);
     }
     EndDrawing();
   }

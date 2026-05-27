@@ -12,8 +12,10 @@ void SpawnEnemy(struct EnemyList *list, float playerZ) {
     struct Enemy *enemy = (struct Enemy *)malloc(sizeof(struct Enemy));
 
     enemy->z = playerZ + 200.0f + (rand() % 300);
-    enemy->x = ((rand() % 1601) - 800) / 1000.0f;
+    enemy->faixa = rand() % 3;
+    enemy->x = (enemy->faixa - 1) * 0.5f;
     enemy->speed = 0.05f + ((rand() % 26) / 100.0f);
+    enemy->passou = false;
 
     int colorChoice = rand() % 5;
     switch (colorChoice) {
@@ -36,6 +38,15 @@ void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed, Color c
     enemy->x = x;
     enemy->speed = speed;
     enemy->color = color;
+    enemy->passou = false;
+
+    if (x < -0.25f) {
+        enemy->faixa = 0;
+    } else if (x > 0.25f) {
+        enemy->faixa = 2;
+    } else {
+        enemy->faixa = 1;
+    }
 
     enemy->next = list->head;
     list->head = enemy;
@@ -63,6 +74,22 @@ void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
     while (list->count < 25) {
         SpawnEnemy(list, playerZ);
     }
+}
+
+int CountPassedEnemies(struct EnemyList *list, float playerZ) {
+    int passed = 0;
+    struct Enemy *enemy = list->head;
+
+    while (enemy != NULL) {
+        if (!enemy->passou && enemy->z < playerZ - 20.0f) {
+            enemy->passou = true;
+            passed++;
+        }
+
+        enemy = enemy->next;
+    }
+
+    return passed;
 }
 
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track) {

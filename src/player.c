@@ -28,8 +28,9 @@ void UpdatePlayer(struct Player *player){
 
     player->z += player->speed;
     if (player->speed > 0.0f) {
-        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) player->x -= 0.035f;
-        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) player->x += 0.035f;
+        float acele_lateral=0.0f+(player->speed)*0.03;
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) player->x -= acele_lateral;
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) player->x += acele_lateral;
     }
 
 

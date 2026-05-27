@@ -4,6 +4,7 @@
 #include "player.h"
 #include "track.h"
 #include "enemy.h"
+#include "collision.h"
 
 GameState *init_game(void){
     srand((unsigned int)time(NULL));
@@ -14,6 +15,11 @@ GameState *init_game(void){
     state->logo_timer = 0.0f;
     state->elapsed_time = 0.0f;
     state->is_paused = false;
+    state->day = 1;
+    state->cars_to_pass = 0;
+    state->cars_passed_today = 0;
+    state->cars_passed_total = 0;
+    state->top_score = 0;
     state->player = (Player *)malloc(sizeof(Player));
     state->track = (Track *)malloc(sizeof(Track));
     state->enemies = (EnemyList *)malloc(sizeof(EnemyList));
@@ -63,6 +69,12 @@ void update_game(GameState *state, float dt){
 
             UpdatePlayer(state->player);
             UpdateEnemies(state->enemies, dt, state->player->z);
+            int passed = CountPassedEnemies(state->enemies, state->player->z);
+            state->cars_passed_today += passed;
+            state->cars_passed_total += passed;
+            if (CheckPlayerEnemyCollisions(state->player, state->enemies)) {
+                state->player->speed *= 0.35f;
+            }
             }
             break;
 
