@@ -4,6 +4,8 @@
 #include "player.h"
 #include "track.h"
 #include "enemy.h"
+#include "score.h"
+#include <stdbool.h>
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Enduro");
@@ -23,6 +25,10 @@ int main(void) {
     return 1;
   }
 
+  ScoreEntry top_scores[5];
+  int top_scores_count = 0;
+  bool scores_loaded = false;
+
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
 
@@ -34,7 +40,16 @@ int main(void) {
             menuSelectdOption = !menuSelectdOption;
         }
         if (IsKeyPressed(KEY_ENTER)){
-            if (menuSelectdOption == 0) change_state(game, STATE_PLAYING);
+            if (menuSelectdOption == 0){
+
+                game->day_timer = DAY_DURATION;
+                game->day = 1;
+                game->cars_to_pass = 200;
+                game->cars_passed_today = 0;
+                game->score = 0;
+
+                change_state(game, STATE_PLAYING);
+            }
             else break;
         }
     }
@@ -67,9 +82,60 @@ int main(void) {
         DrawTrack(game->track,game->player);
         DrawPlayer(game->player);
         DrawEnemies(game->enemies, game->player, game->track);
+
+        int faltam = game->cars_to_pass - game->cars_passed_today;
+        if (faltam < 0) faltam = 0;
+        int minutos = (int)(game->day_timer) / 60;
+        int segundos = (int)(game->day_timer) % 60;
+
         DrawText(TextFormat("KM/H: %.0f", game->player->speed * 220.0f), 20, 20, 20, BLACK);
-        DrawText(TextFormat("DISTANCIA: %.0f M", game->player->z), 20, 50, 20, BLACK);
-        DrawText(TextFormat("PONTOS: %d", game->cars_passed_total), 20, 80, 20, BLACK);
+        DrawText(TextFormat("DIST: %.0f M", game->player->z), 20, 50, 20, BLACK);
+
+        DrawText(TextFormat("TEMPO: %02d:%02d", minutos, segundos), 600, 20, 20, BLACK);
+        DrawText(TextFormat("PONTOS: %06d", game->score), 600, 50, 20, BLACK);
+        DrawText(TextFormat("DIA: %d", game->day), 600, 80, 20, BLACK);
+
+        if (faltam > 0) {
+            DrawText(TextFormat("FALTAM: %d", faltam), 350, 20, 30, RED);
+        }
+        else {
+            DrawText(TextFormat("CLASSIFICADO!"), 320, 20, 30, DARKGREEN);
+        }
+    }
+    else if (game->current_state == STATE_GAME_OVER) {
+        ClearBackground(BLACK);
+        scores_loaded = false;
+        DrawText("FIM DE JOGO", 280, 150, 40, RED);
+        DrawText(TextFormat("PONTUAÇÃO FINAL: %d", game->score), 250, 220, 20, WHITE);
+        DrawText("DIGITE SEU NOME (Max 9 letras):", 220, 280, 20, RED);
+        DrawText(game->player_name, 350, 330, 30, YELLOW);
+
+        if ((int)(GetTime() * 2) % 2 == 0 && game->name_length < 9) {
+            DrawText("_", 350 + MeasureText(game->player_name, 30), 330, 30, YELLOW);
+        }
+        DrawText("PRESSIONE ENTER PARA SALVAR", 230, 420, 20, DARKGRAY);
+    }
+    else if (game->current_state == STATE_TOP_SCORES) {
+        ClearBackground(BLACK);
+        DrawText("RANKING ENDURO", 250, 80, 35, GOLD);
+
+        if (!scores_loaded) {
+            top_scores_count = LoadTopScores(top_scores, 5);
+            scores_loaded = true;
+        }
+
+        if (top_scores_count == 0) {
+            DrawText("NENHUM SCORE REGISTRADO", 200, 200, 20, GRAY);
+        }
+        else {
+            for (int i = 0; i < top_scores_count; i++) {
+                int posY = 180 + (i * 40);
+                DrawText(TextFormat("%d", i + 1), 260, posY, 25, WHITE);
+                DrawText(top_scores[i].name, 300, posY, 25, SKYBLUE);
+                DrawText(TextFormat("%06d", top_scores[i].score), 480, posY, 25, YELLOW);
+            }
+        }
+        DrawText("PRESSIONE ENTER PARA VOLTAR", 200, 500, 20, DARKGRAY);
     }
     EndDrawing();
   }

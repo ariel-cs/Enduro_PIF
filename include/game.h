@@ -27,11 +27,13 @@ typedef struct {
     int day;
     int cars_to_pass;
     int cars_passed_today;
-    int cars_passed_total;
+    int score;
+    float day_timer;
     float elapsed_time;
     float logo_timer;
     bool is_paused;
-    int top_score;
+    char player_name[10];
+    int name_length;
 } GameState;
 
 // API da maquina de estados
