@@ -11,18 +11,18 @@ typedef struct Enemy {
     float speed;
     int faixa;
     bool passou;
-    Color color;
     struct Enemy *next;
 } Enemy;
 
 typedef struct EnemyList {
     struct Enemy *head;
     int count;
+    Texture2D texture;
 } EnemyList;
 
 void InitEnemyList(struct EnemyList *list);
 void SpawnEnemy(struct EnemyList *list, float playerZ);
-void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed, Color color);
+void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed);
 void UpdateEnemies(struct EnemyList *list, float dt, float playerZ);
 int CountPassedEnemies(struct EnemyList *list, float playerZ);
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track);
