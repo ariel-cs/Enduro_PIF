@@ -1,3 +1,4 @@
+#include <math.h>
 #include "raylib.h"
 #include "track.h"
 #include "config.h"
@@ -86,11 +87,16 @@ void DrawTrack(struct Track *track,struct Player *player){
         Color colorRoad = track->segments[trackIndex].colorRoad;
         Color colorZebra = track->segments[trackIndex].colorZebra;
 
-        curveAmout += targetCurve * (1.0f - scale) * 0.85f;
+        // curva só acumula dentro do alcance de visão
+        float maxDraw = 300.0f;
+        if (projectZ < maxDraw) {
+            curveAmout += targetCurve * (1.0f - scale) * 0.85f;
+        }
 
         float centerX = (SCREEN_WIDTH / 2.0f) + curveAmout + cameraTurn * (1.0f - scale);
-        float roadWidth = 600.0f * scale;
-        float zebraWidth = 35.0f * scale;
+        float perspScale = powf(scale, 1.2f);
+        float roadWidth = 600.0f * perspScale;
+        float zebraWidth = 35.0f * perspScale;
 
         DrawLine(centerX - roadWidth/2 - zebraWidth, y, centerX - roadWidth/2, y, colorZebra);
         DrawLine(centerX - roadWidth/2, y, centerX + roadWidth/2, y, colorRoad);
