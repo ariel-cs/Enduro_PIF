@@ -17,6 +17,11 @@ int main(void) {
 
   int menuSelectdOption = 0;
   GameState *game = init_game();
+  if (!game) {
+    UnloadTexture(logotex);
+    CloseWindow();
+    return 1;
+  }
 
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();

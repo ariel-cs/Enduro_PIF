@@ -10,6 +10,9 @@ GameState *init_game(void){
     srand((unsigned int)time(NULL));
 
     GameState *state = (GameState *)malloc(sizeof(GameState));
+    if (state == NULL) {
+        return NULL;
+    }
 
     state->current_state = STATE_LOGO;
     state->logo_timer = 0.0f;
@@ -23,6 +26,13 @@ GameState *init_game(void){
     state->player = (Player *)malloc(sizeof(Player));
     state->track = (Track *)malloc(sizeof(Track));
     state->enemies = (EnemyList *)malloc(sizeof(EnemyList));
+    if (state->player == NULL || state->track == NULL || state->enemies == NULL) {
+        free(state->player);
+        free(state->track);
+        free(state->enemies);
+        free(state);
+        return NULL;
+    }
     //Simplesmente não tem inimigo nas primeiras 1000 metros então isso aqui conserta!
     InitEnemyList(state->enemies);
     for (int i = 0; i < 18; i++) {

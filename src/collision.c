@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <math.h>
 #include "raylib.h"
 #include "collision.h"
 #include "config.h"
@@ -22,7 +23,10 @@ static float GetTrackCurveAmount(struct Player *player, struct Track *track, flo
         float cprojectZ = 800.0f / cdynamicY;
         int ctrackIndex = ((int)(player->z + cprojectZ)) % TRACK_LENGTH;
 
-        curveAmount += track->segments[ctrackIndex].curve * (1.0f - cscale) * 0.85f;
+        // mesma regra do renderer (DrawEnemies): curva só acumula dentro do alcance de visão
+        if (cprojectZ < 300.0f) {
+            curveAmount += track->segments[ctrackIndex].curve * (1.0f - cscale) * 0.85f;
+        }
     }
 
     return curveAmount;
@@ -44,8 +48,9 @@ static bool GetEnemyRect(struct Player *player, struct Enemy *enemy, struct Trac
     float scale = (y - HORIZON) / HORIZON;
     float cameraTurn = player->x * -100.0f;
     float curveAmount = GetTrackCurveAmount(player, track, y);
+    // mesma projeção do renderer (DrawEnemies) para o hitbox alinhar com o sprite
     float enemyScreenX = (SCREEN_WIDTH / 2.0f) +
-                         (enemy->x * 300.0f * scale) +
+                         (enemy->x * 300.0f * powf(scale, 1.4f)) +
                          curveAmount +
                          cameraTurn * (1.0f - scale);
     float enemyWidth = 50.0f * scale;

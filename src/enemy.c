@@ -83,6 +83,9 @@ void InitEnemyList(struct EnemyList *list) {
 
 void SpawnEnemy(struct EnemyList *list, float playerZ) {
     struct Enemy *enemy = (struct Enemy *)malloc(sizeof(struct Enemy));
+    if (enemy == NULL) {
+        return;
+    }
 
     enemy->z = playerZ + 200.0f + (rand() % 300);
     enemy->faixa = rand() % 3;
@@ -96,6 +99,9 @@ void SpawnEnemy(struct EnemyList *list, float playerZ) {
 
 void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed) {
     struct Enemy *enemy = (struct Enemy *)malloc(sizeof(struct Enemy));
+    if (enemy == NULL) {
+        return;
+    }
 
     enemy->z = z;
     enemy->x = x;
@@ -134,7 +140,11 @@ void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
     }
 
     while (list->count < 25) {
+        int before = list->count;
         SpawnEnemy(list, playerZ);
+        if (list->count == before) {
+            break; // spawn falhou (malloc), evita laço infinito
+        }
     }
 }
 
