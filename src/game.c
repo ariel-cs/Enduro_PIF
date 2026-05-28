@@ -67,12 +67,15 @@ void update_game(GameState *state, float dt){
 
         case STATE_PLAYING: {
 
-            UpdatePlayer(state->player);
+            int trackIndex = ((int)state->player->z) % TRACK_LENGTH;
+            float trackCurve = state->track->segments[trackIndex].curve;
+
+            UpdatePlayer(state->player, trackCurve);
             UpdateEnemies(state->enemies, dt, state->player->z);
             int passed = CountPassedEnemies(state->enemies, state->player->z);
             state->cars_passed_today += passed;
             state->cars_passed_total += passed;
-            if (CheckPlayerEnemyCollisions(state->player, state->enemies)) {
+            if (CheckPlayerEnemyTrackCollisions(state->player, state->enemies, state->track)) {
                 state->player->speed *= 0.35f;
             }
             }

@@ -4,7 +4,7 @@
 #include "raylib.h"
 #include "player.h"
 
-#define TRACK_LENGTH 6000
+#define TRACK_LENGTH 1000
 
 typedef struct{
     float curve;

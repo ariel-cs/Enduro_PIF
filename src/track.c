@@ -2,28 +2,38 @@
 #include "track.h"
 #include "config.h"
 
+static float alisar(float t) {
+    if (t < 0.0f) return 0.0f;
+    if (t > 1.0f) return 1.0f;
+    return t * t * (3.0f - 2.0f * t);
+}
+
+static float progresso(int i, float inicio, float fim) {
+    return alisar((i - inicio) / (fim - inicio));
+}
+
 void InitTrack(struct Track *track){
     for (int i = 0; i < TRACK_LENGTH; i++) {
 
         if (i < TRACK_LENGTH/7.5) track->segments[i].curve = 0.0f;
         else if (i < TRACK_LENGTH/5.5){
-            float t = (float)(i - TRACK_LENGTH/7.5) / 300.0f;
+            float t = progresso(i, TRACK_LENGTH/7.5f, TRACK_LENGTH/5.5f);
             track->segments[i].curve = t * 1.5f;
         }
         else if (i < TRACK_LENGTH/2.7) track->segments[i].curve = 1.5f;
         else if (i < TRACK_LENGTH/2.4){
-            float t = (float)(TRACK_LENGTH/2.4 - i) / 300.0f;
-            track->segments[i].curve = t * 1.5f;
+            float t = progresso(i, TRACK_LENGTH/2.7f, TRACK_LENGTH/2.4f);
+            track->segments[i].curve = (1.0f - t) * 1.5f;
         }
         else if (i < TRACK_LENGTH/1.818) track->segments[i].curve = 0.0f;
         else if (i < TRACK_LENGTH/1.666){
-            float t = (float)(i - TRACK_LENGTH/1.818) / 300.0f;
+            float t = progresso(i, TRACK_LENGTH/1.818f, TRACK_LENGTH/1.666f);
             track->segments[i].curve = t * -1.8f;
         }
         else if (i < TRACK_LENGTH/1.276) track->segments[i].curve = -1.8f;
         else if (i < TRACK_LENGTH/1.2){
-            float t = (float)(TRACK_LENGTH/1.2 - i) / 300.0f;
-            track->segments[i].curve = t * -1.8f;
+            float t = progresso(i, TRACK_LENGTH/1.276f, TRACK_LENGTH/1.2f);
+            track->segments[i].curve = (1.0f - t) * -1.8f;
         }
         else track->segments[i].curve = 0.0f;
 
@@ -37,6 +47,25 @@ void InitTrack(struct Track *track){
             track->segments[i].colorZebra = WHITE;
         }
     }
+
+    for (int repeticao = 0; repeticao < 8; repeticao++) {
+        float curvaSuave[TRACK_LENGTH];
+
+        for (int i = 0; i < TRACK_LENGTH; i++) {
+            int anterior = (i - 1 + TRACK_LENGTH) % TRACK_LENGTH;
+            int proximo = (i + 1) % TRACK_LENGTH;
+
+            curvaSuave[i] = (
+                track->segments[anterior].curve +
+                track->segments[i].curve * 2.0f +
+                track->segments[proximo].curve
+            ) / 4.0f;
+        }
+
+        for (int i = 0; i < TRACK_LENGTH; i++) {
+            track->segments[i].curve = curvaSuave[i];
+        }
+    }
 }
 
 void DrawTrack(struct Track *track,struct Player *player){
@@ -44,6 +73,7 @@ void DrawTrack(struct Track *track,struct Player *player){
     DrawRectangle(0, HORIZON, SCREEN_WIDTH, HORIZON, GREEN);
 
     float curveAmout = 0.0f;
+    float cameraTurn = player->x * -100.0f;
 
     for (int y = SCREEN_HEIGHT; y >= HORIZON; y--) {
         float scale = (float)(y - HORIZON) / HORIZON;
@@ -58,7 +88,7 @@ void DrawTrack(struct Track *track,struct Player *player){
 
         curveAmout += targetCurve * (1.0f - scale) * 0.85f;
 
-        float centerX = (SCREEN_WIDTH / 2.0f) + curveAmout;
+        float centerX = (SCREEN_WIDTH / 2.0f) + curveAmout + cameraTurn * (1.0f - scale);
         float roadWidth = 600.0f * scale;
         float zebraWidth = 35.0f * scale;
 

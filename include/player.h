@@ -12,7 +12,7 @@ struct Player {
 };
 
 void InitPlayer(struct Player *player);
-void UpdatePlayer(struct Player *player);
+void UpdatePlayer(struct Player *player, float curva);
 void DrawPlayer(struct Player *player);
 
 #endif

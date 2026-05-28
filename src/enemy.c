@@ -94,6 +94,7 @@ int CountPassedEnemies(struct EnemyList *list, float playerZ) {
 
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track) {
     struct Enemy *enemy = list->head;
+    float cameraTurn = player->x * -100.0f;
 
     while (enemy != NULL) {
         float deltaZ = enemy->z - player->z;
@@ -113,7 +114,10 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
                     curveAmount += track->segments[ctrackIndex].curve * (1.0f - cscale) * 0.85f;
                 }
 
-                float enemyScreenX = (SCREEN_WIDTH / 2.0f) + (enemy->x * 300.0f * scale) + curveAmount;
+                float enemyScreenX = (SCREEN_WIDTH / 2.0f) +
+                                     (enemy->x * 300.0f * scale) +
+                                     curveAmount +
+                                     cameraTurn * (1.0f - scale);
 
                 float enemyWidth = 50.0f * scale;
                 float enemyHeight = 35.0f * scale;

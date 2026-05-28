@@ -12,7 +12,7 @@ void InitPlayer(struct Player *player){
     player->friction = 0.0002f;
 }
 
-void UpdatePlayer(struct Player *player){
+void UpdatePlayer(struct Player *player, float curva){
     if (IsKeyDown(KEY_SPACE)) {
         player->speed += player->acele;
         if (player->speed > player->maxSpeed) player->speed = player->maxSpeed;
@@ -31,6 +31,10 @@ void UpdatePlayer(struct Player *player){
         float acele_lateral=0.0f+(player->speed)*0.03;
         if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) player->x -= acele_lateral;
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) player->x += acele_lateral;
+        if (curva > -0.05f && curva < 0.05f) curva = 0.0f;
+
+        float curvando= curva * player->speed * 0.005f;
+        player->x -= curvando;
     }
 
 
