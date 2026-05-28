@@ -7,4 +7,6 @@
 
 #define HORIZON (SCREEN_HEIGHT / 2)
 
+#define DAY_DURATION 210.0f
+
 #endif
