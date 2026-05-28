@@ -18,6 +18,8 @@ typedef struct EnemyList {
     struct Enemy *head;
     int count;
     Texture2D texture;
+    int   wheelFrame;  // 0 ou 1: alterna as duas linhas de animação da roda
+    float wheelTimer;
 } EnemyList;
 
 void InitEnemyList(struct EnemyList *list);

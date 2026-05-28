@@ -13,6 +13,9 @@ typedef struct {
     int h;
 } EnemyRow;
 
+// Linhas 0-6: tamanhos da perspectiva (longe -> perto).
+// Linhas 7 e 8: mesmo tamanho (mais perto), são os dois quadros de
+// animação das rodas, alternados no tempo (não pela distância).
 static EnemyRow enemyRows[] = {
     { 1,   0,  10, 10 }, // row 0 - muito distante
     { 7,  26,  10, 10 }, // row 1
@@ -21,9 +24,13 @@ static EnemyRow enemyRows[] = {
     { 7,  80,  26, 18 }, // row 4
     { 7, 106,  34, 18 }, // row 5
     { 5, 132,  42, 26 }, // row 6
-    { 5, 166,  50, 34 }, // row 7
-    { 5, 208,  50, 34 }, // row 8 - mais perto
+    { 5, 166,  50, 34 }, // row 7 - mais perto, quadro de roda A
+    { 5, 208,  50, 34 }, // row 8 - mais perto, quadro de roda B
 };
+
+#define ENEMY_ROW_WHEEL_A 7
+#define ENEMY_ROW_WHEEL_B 8
+#define ENEMY_WHEEL_FRAME_SPEED 0.1f  // segundos por quadro
 
 static int GetEnemyRowIndex(float y) {
     float h = SCREEN_HEIGHT - HORIZON;
@@ -36,9 +43,7 @@ static int GetEnemyRowIndex(float y) {
     if (t < 0.35f) return 4;
     if (t < 0.50f) return 5;
     if (t < 0.65f) return 6;
-    if (t < 0.80f) return 7;
-    return 8; // últimos 20% da tela
-
+    return ENEMY_ROW_WHEEL_A; // mais perto: quadro escolhido pela animação
 }
 
 
@@ -75,6 +80,8 @@ static int GetEnemyCol(float enemyX, float trackCurve, int maxCols) {
 void InitEnemyList(struct EnemyList *list) {
     list->head = NULL;
     list->count = 0;
+    list->wheelFrame = 0;
+    list->wheelTimer = 0.0f;
     Image img = LoadImage("assets/enemy_blue.png");
     ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
     list->texture = LoadTextureFromImage(img);
@@ -122,7 +129,13 @@ void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed) {
 }
 
 void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
-    (void)dt; // dt não usado, corrigir no ultimo dia
+    // avança a animação das rodas (alterna entre as linhas 7 e 8)
+    list->wheelTimer += dt;
+    if (list->wheelTimer >= ENEMY_WHEEL_FRAME_SPEED) {
+        list->wheelTimer = 0.0f;
+        list->wheelFrame = (list->wheelFrame + 1) % 2;
+    }
+
     struct Enemy **current = &list->head;
 
     while (*current != NULL) {
@@ -190,6 +203,12 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
                                      cameraTurn * (1.0f - scale);
 
                 int rowIdx = GetEnemyRowIndex(y);
+                // na faixa mais próxima, alterna entre os dois quadros de roda;
+                // desloca por faixa para os carros não girarem em sincronia
+                if (rowIdx == ENEMY_ROW_WHEEL_A) {
+                    rowIdx = ((list->wheelFrame + enemy->faixa) % 2)
+                                 ? ENEMY_ROW_WHEEL_B : ENEMY_ROW_WHEEL_A;
+                }
                 EnemyRow row = enemyRows[rowIdx];
 
                 // Busca a curva do segmento na posição Z do inimigo
