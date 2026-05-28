@@ -1,5 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+#include <raylib.h>
 
 struct Player {
     float z;
@@ -9,7 +10,13 @@ struct Player {
     float acele;
     float decele;
     float friction;
+    Texture2D texture;
+    int   currentFrame;
+    float frameTimer;
+    float frameSpeed;
 };
+
+
 
 void InitPlayer(struct Player *player);
 void UpdatePlayer(struct Player *player, float curva);

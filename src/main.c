@@ -9,7 +9,7 @@ int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Enduro");
   SetTargetFPS(60);
 
-  Image img = LoadImage("LOGO.png");
+  Image img = LoadImage("assets/LOGO.png");
   ImageResize(&img, 294, 110);
   Texture2D logotex = LoadTextureFromImage(img);
   UnloadImage(img);
@@ -70,6 +70,7 @@ int main(void) {
   }
 
   UnloadTexture(logotex);
+  UnloadTexture(game->player->texture);
   free_game(game);
   CloseWindow();
   return 0;
