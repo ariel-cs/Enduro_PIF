@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include "enemy.h"
 #include "config.h"
@@ -76,20 +77,23 @@ void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
     }
 }
 
-int CountPassedEnemies(struct EnemyList *list, float playerZ) {
-    int passed = 0;
+void CheckPassedEnemies(struct EnemyList *list, float playerZ, int *car_passed, int *car_lost){
+    *car_passed = 0;
+    *car_lost = 0;
+
     struct Enemy *enemy = list->head;
 
     while (enemy != NULL) {
-        if (!enemy->passou && enemy->z < playerZ - 20.0f) {
-            enemy->passou = true;
-            passed++;
+        if (!enemy->passou && enemy->z < playerZ - 20.0f) { //conta os inimigos passados
+            enemy->passou = true;                          // ele verifica que passou e adiciona
+            (*car_passed)++;
         }
-
+        else if (enemy->passou && enemy->z > playerZ + 20.0f) { //serve para inimigos que passaram o jogador
+            enemy->passou = false;                             // ele verifica se passou e quarda o valor que vai ser tirado
+            (*car_lost)++;
+        }
         enemy = enemy->next;
     }
-
-    return passed;
 }
 
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track) {

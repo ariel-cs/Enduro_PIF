@@ -43,8 +43,16 @@ static void TestPassedEnemies(void) {
     SpawnEnemyAt(&list, 10.0f, 0.0f, 0.1f, BLUE);
     SpawnEnemyAt(&list, 200.0f, 0.0f, 0.1f, RED);
 
-    assert(CountPassedEnemies(&list, 40.0f) == 1);
-    assert(CountPassedEnemies(&list, 40.0f) == 0);
+    int passed = 0;
+    int lost = 0;
+
+    CheckPassedEnemies(&list, 40.0f, &passed, &lost);
+    assert(passed == 1);
+    assert(lost == 0);
+
+    CheckPassedEnemies(&list, 40.0f, &passed, &lost);
+    assert(passed == 0);
+    assert(lost == 0);
 
     FreeEnemyList(&list);
 }

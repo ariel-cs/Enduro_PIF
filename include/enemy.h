@@ -24,7 +24,7 @@ void InitEnemyList(struct EnemyList *list);
 void SpawnEnemy(struct EnemyList *list, float playerZ);
 void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed, Color color);
 void UpdateEnemies(struct EnemyList *list, float dt, float playerZ);
-int CountPassedEnemies(struct EnemyList *list, float playerZ);
+void CheckPassedEnemies(struct EnemyList *list, float playerZ,int *car_passed,int *car_lost);
 void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *track);
 void FreeEnemyList(struct EnemyList *list);
 
