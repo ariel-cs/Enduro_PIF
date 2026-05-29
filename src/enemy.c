@@ -4,8 +4,6 @@
 #include "enemy.h"
 #include "config.h"
 #include "track.h"
-// fator de escala aplicado aos sprites da sheet
-#define ENEMY_SCALE 1.15f
 
 typedef struct {
     int cols;
@@ -32,6 +30,18 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_ROW_WHEEL_A 7
 #define ENEMY_ROW_WHEEL_B 8
 #define ENEMY_WHEEL_FRAME_SPEED 0.1f  // segundos por quadro
+
+static float GetEnemyLaneX(int faixa) {
+    if (faixa < 0) faixa = 0;
+    if (faixa > 2) faixa = 2;
+    return (faixa - 1) * 0.7f;
+}
+
+static int GetEnemyLaneFromX(float x) {
+    if (x < -0.25f) return 0;
+    if (x > 0.25f) return 2;
+    return 1;
+}
 
 static int GetEnemyRowIndex(float y) {
     float h = SCREEN_HEIGHT - HORIZON;
@@ -86,6 +96,7 @@ void InitEnemyList(struct EnemyList *list) {
     Image img = LoadImage("assets/enemy_blue.png");
     ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
     list->texture = LoadTextureFromImage(img);
+    SetTextureFilter(list->texture, TEXTURE_FILTER_POINT);
     UnloadImage(img);
 }
 
@@ -97,7 +108,7 @@ void SpawnEnemy(struct EnemyList *list, float playerZ) {
 
     enemy->z = playerZ + 200.0f + (rand() % 300);
     enemy->faixa = rand() % 3;
-    enemy->x = (enemy->faixa - 1) * 0.5f;
+    enemy->x = GetEnemyLaneX(enemy->faixa);
     enemy->speed = 0.05f + ((rand() % 26) / 100.0f);
     enemy->passou = false;
     enemy->next = list->head;
@@ -112,17 +123,10 @@ void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed) {
     }
 
     enemy->z = z;
-    enemy->x = x;
+    enemy->faixa = GetEnemyLaneFromX(x);
+    enemy->x = GetEnemyLaneX(enemy->faixa);
     enemy->speed = speed;
     enemy->passou = false;
-
-    if (x < -0.25f) {
-        enemy->faixa = 0;
-    } else if (x > 0.25f) {
-        enemy->faixa = 2;
-    } else {
-        enemy->faixa = 1;
-    }
 
     enemy->next = list->head;
     list->head = enemy;
@@ -202,7 +206,7 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
                     }
                 }
                 float enemyScreenX = (SCREEN_WIDTH / 2.0f) +
-                                     (enemy->x * 300.0f * powf(scale, 1.4f)) +
+                                     (enemy->x * (TRACK_BASE_WIDTH / 2.0f) * powf(scale, 1.4f)) +
                                      curveAmount +
                                      cameraTurn * (1.0f - scale);
 
@@ -222,8 +226,9 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
 
                 int col = GetEnemyCol(enemy->x, trackCurve, row.cols);
 
-                float destW = row.w * ENEMY_SCALE;
-                float destH = row.h * ENEMY_SCALE;
+                float roadWidth = TRACK_BASE_WIDTH * powf(scale, 1.2f);
+                float destW = roadWidth * VEHICLE_TRACK_WIDTH_RATIO;
+                float destH = row.h * (destW / row.w);
                 
                 Rectangle src = {
                     (float)(col * row.w),

@@ -4,6 +4,7 @@
 #include "player.h"
 #include "track.h"
 #include "enemy.h"
+#include "collision.h"
 #include "score.h"
 #include <stdbool.h>
 
@@ -82,6 +83,9 @@ int main(void) {
         DrawTrack(game->track,game->player);
         DrawPlayer(game->player);
         DrawEnemies(game->enemies, game->player, game->track);
+#if DEBUG_HITBOXES
+        DrawHitboxes(game->player, game->enemies, game->track);
+#endif
 
         int faltam = game->cars_to_pass - game->cars_passed_today;
         if (faltam < 0) faltam = 0;
