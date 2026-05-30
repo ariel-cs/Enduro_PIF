@@ -8,5 +8,6 @@
 bool CheckEnemyCollision(struct Player *player, struct Enemy *enemy);
 bool CheckPlayerEnemyCollisions(struct Player *player, struct EnemyList *list);
 bool CheckPlayerEnemyTrackCollisions(struct Player *player, struct EnemyList *list, struct Track *track);
+void DrawHitboxes(struct Player *player, struct EnemyList *list, struct Track *track);
 
 #endif

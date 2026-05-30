@@ -18,8 +18,9 @@ void InitPlayer(struct Player *player){
     Image img = LoadImage("assets/player_sheet.png");
     ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
     ImageColorReplace(&img, PURPLE, BLANK);
-    ImageResize(&img, 68 * 5, 60 * 2);
+    ImageResizeNN(&img, 68 * 5, 60 * 2);
     player->texture = LoadTextureFromImage(img);
+    SetTextureFilter(player->texture, TEXTURE_FILTER_POINT);
     UnloadImage(img);
 }
 
@@ -81,6 +82,8 @@ void UpdatePlayer(struct Player *player, float curva){
 void DrawPlayer(struct Player *player){
     int frameW = player->texture.width  / 5;
     int frameH = player->texture.height / 2;
+    float destW = VEHICLE_BASE_WIDTH;
+    float destH = frameH * (destW / frameW);
 
     int col = GetPlayerColumn(player);
 
@@ -91,10 +94,12 @@ void DrawPlayer(struct Player *player){
         (float)frameH
     };
 
-    Vector2 pos = {
-        (SCREEN_WIDTH  / 2.0f) - (frameW / 2.0f) + (player->x * 300.0f),
-        SCREEN_HEIGHT - 70
+    Rectangle dest = {
+        (SCREEN_WIDTH  / 2.0f) - (destW / 2.0f) + (player->x * (TRACK_BASE_WIDTH / 2.0f)),
+        SCREEN_HEIGHT - 10.0f - destH,
+        destW,
+        destH
     };
 
-    DrawTextureRec(player->texture, src, pos, WHITE);
+    DrawTexturePro(player->texture, src, dest, (Vector2){0, 0}, 0.0f, WHITE);
 }

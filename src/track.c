@@ -95,7 +95,7 @@ void DrawTrack(struct Track *track,struct Player *player){
 
         float centerX = (SCREEN_WIDTH / 2.0f) + curveAmout + cameraTurn * (1.0f - scale);
         float perspScale = powf(scale, 1.2f);
-        float roadWidth = 600.0f * perspScale;
+        float roadWidth = TRACK_BASE_WIDTH * perspScale;
         float zebraWidth = 35.0f * perspScale;
 
         DrawLine(centerX - roadWidth/2 - zebraWidth, y, centerX - roadWidth/2, y, colorZebra);
