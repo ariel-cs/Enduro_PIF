@@ -1,10 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2 -Iinclude -MMD -MP
-LDFLAGS = -lraylib -lm -lpthread -ldl -lrt
+
+# raylib precisa de bibliotecas de sistema diferentes em cada SO.
+# No Windows assume-se o ambiente MSYS2/MinGW (shell Unix-like).
+ifeq ($(OS),Windows_NT)
+    LDFLAGS = -lraylib -lopengl32 -lgdi32 -lwinmm
+    TARGET = enduro.exe
+else
+    LDFLAGS = -lraylib -lm -lpthread -ldl -lrt
+    TARGET = enduro
+endif
+
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
 DEP = $(OBJ:.o=.d)
-TARGET = enduro
 TEST_ENEMIES = tests/test_enemies
 
 $(TARGET): $(OBJ)
