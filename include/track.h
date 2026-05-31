@@ -5,6 +5,7 @@
 #include "player.h"
 
 #define TRACK_LENGTH 1000
+#define PARALLAX_LAYERS 5
 
 typedef struct{
     float curve;
@@ -14,9 +15,13 @@ typedef struct{
 
 struct Track{
     TrackSegment segments[TRACK_LENGTH];
+    Texture2D background[PARALLAX_LAYERS];
+    float backgroundOffset;
 };
 
 void InitTrack(struct Track *track);
+void UpdateTrackParallax(struct Track *track, struct Player *player, float dt);
 void DrawTrack(struct Track *track,struct Player *player);
+void FreeTrack(struct Track *track);
 
 #endif
