@@ -67,6 +67,9 @@ compile_commands.json
 # Build folder
 [Bb]uild
 
+# Runtime score data (a pasta data/ e versionada via data/.gitkeep)
+data/scores.txt
+
 # Android files
 *apk*
 android.*

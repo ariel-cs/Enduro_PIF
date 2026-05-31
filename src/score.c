@@ -2,8 +2,24 @@
 #include <string.h>
 #include "score.h"
 
+#ifdef _WIN32
+#include <direct.h> // _mkdir no Windows (.clang ta chorando mas é falso positivo)
+#define MakeDir(path) _mkdir(path)
+#else
+#include <sys/stat.h> // mkdir no Unix/Linux/Mac
+#define MakeDir(path) mkdir(path, 0755)
+#endif
+
+#define SCORES_DIR "data"
+#define SCORES_PATH "data/scores.txt"
+
+static void EnsureDataDir(void) {
+    MakeDir(SCORES_DIR); // cria a pasta data se nao existir
+}
+
 void SaveScore(const char *name, int score) {
-    FILE *file = fopen("scores.txt", "a"); //ponteiro do tipo FILE abri o score o "a" serve pra appendar cria ou edita
+    EnsureDataDir(); // garante que a pasta data exista antes de escrever
+    FILE *file = fopen(SCORES_PATH, "a"); //ponteiro do tipo FILE abri o score o "a" serve pra appendar cria ou edita (cria se nao existir)
     if (file != NULL){
         fprintf(file, "%s %d\n",name,score); // print pra tipo file de nome e int
         fclose(file); // fecha arquivo que nem em python ele tem que fechar e abrir para evitar erros
@@ -11,7 +27,7 @@ void SaveScore(const char *name, int score) {
 }
 
 int LoadTopScores(ScoreEntry *top_scores, int max_count) {
-    FILE *file = fopen("scores.txt", "r"); // abri o file so que dessa vez no modo leitura
+    FILE *file = fopen(SCORES_PATH, "r"); // abri o file so que dessa vez no modo leitura
     if (file == NULL) {
         return 0;
     }
