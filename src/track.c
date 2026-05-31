@@ -3,6 +3,12 @@
 #include "track.h"
 #include "config.h"
 
+
+#define BACKGROUND_CURVE_DEADZONE 0.05f
+#define BACKGROUND_SCROLL_FORCE 420.0f
+#define BACKGROUND_TURN_SWAY 70.0f
+
+
 static const char *BACKGROUND_FILES[PARALLAX_LAYERS] = {
     "assets/background/8.png",
     "assets/background/7.png",
@@ -21,14 +27,8 @@ static const float BACKGROUND_SCALE[PARALLAX_LAYERS] = {
 };
 
 static const float BACKGROUND_Y_OFFSET[PARALLAX_LAYERS] = {
-    0.0f, 100.0f, 100.0f, 40.0f, 30.0f, 155.0f
+    0.0f, 90.0f, 100.0f, 40.0f, 29.0f, 115.0f
 };
-
-
-
-#define BACKGROUND_CURVE_DEADZONE 0.05f
-#define BACKGROUND_SCROLL_FORCE 420.0f
-#define BACKGROUND_TURN_SWAY 70.0f
 
 static float alisar(float t) {
     if (t < 0.0f) return 0.0f;

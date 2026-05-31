@@ -51,7 +51,10 @@ int main(void) {
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
 
-    if(game->current_state == STATE_TITLE && IsKeyPressed(KEY_ENTER)){
+    if (game->current_state == STATE_LOGO && IsKeyPressed(KEY_ENTER)){
+        change_state(game, STATE_TITLE);
+    }
+    else if (game->current_state == STATE_TITLE && IsKeyPressed(KEY_ENTER)){
         change_state(game, STATE_MENU);
     }
     else if (game->current_state == STATE_MENU) {
