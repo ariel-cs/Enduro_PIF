@@ -5,7 +5,9 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-#define HORIZON (SCREEN_HEIGHT / 2)
+#define HUD_HEIGHT 140                          // faixa do painel na base (estilo Enduro)
+#define PLAY_HEIGHT (SCREEN_HEIGHT - HUD_HEIGHT) // 460 - área de corrida (pista)
+#define HORIZON (PLAY_HEIGHT / 2)                // 230 - mantém HORIZON = PLAY_HEIGHT/2
 
 #define TRACK_BASE_WIDTH 600.0f
 #define VEHICLE_TRACK_WIDTH_RATIO (1.0f / 4.0f)

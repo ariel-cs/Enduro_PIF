@@ -96,7 +96,7 @@ void DrawPlayer(struct Player *player){
 
     Rectangle dest = {
         (SCREEN_WIDTH  / 2.0f) - (destW / 2.0f) + (player->x * (TRACK_BASE_WIDTH / 2.0f)),
-        SCREEN_HEIGHT - 10.0f - destH,
+        PLAY_HEIGHT - 10.0f - destH,
         destW,
         destH
     };

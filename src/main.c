@@ -7,6 +7,7 @@
 #include "collision.h"
 #include "score.h"
 #include "audio.h"
+#include "ui.h"
 #include <stdbool.h>
 
 int main(void) {
@@ -119,24 +120,7 @@ int main(void) {
         DrawHitboxes(game->player, game->enemies, game->track);
 #endif
 
-        int faltam = game->cars_to_pass - game->cars_passed_today;
-        if (faltam < 0) faltam = 0;
-        int minutos = (int)(game->day_timer) / 60;
-        int segundos = (int)(game->day_timer) % 60;
-
-        DrawText(TextFormat("KM/H: %.0f", game->player->speed * 220.0f), 20, 20, 20, BLACK);
-        DrawText(TextFormat("DIST: %.0f M", game->player->z), 20, 50, 20, BLACK);
-
-        DrawText(TextFormat("TEMPO: %02d:%02d", minutos, segundos), 600, 20, 20, BLACK);
-        DrawText(TextFormat("PONTOS: %06d", game->score), 600, 50, 20, BLACK);
-        DrawText(TextFormat("DIA: %d", game->day), 600, 80, 20, BLACK);
-
-        if (faltam > 0) {
-            DrawText(TextFormat("FALTAM: %d", faltam), 350, 20, 30, RED);
-        }
-        else {
-            DrawText(TextFormat("CLASSIFICADO!"), 320, 20, 30, DARKGREEN);
-        }
+        DrawHUD(game);
     }
     else if (game->current_state == STATE_GAME_OVER) {
         ClearBackground(BLACK);

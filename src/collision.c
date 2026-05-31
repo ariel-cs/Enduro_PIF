@@ -9,7 +9,7 @@
 #define ENEMY_HITBOX_OFFSET_X_RATIO -0.08f
 
 static float GetEnemyHeightRatio(float y) {
-    float h = SCREEN_HEIGHT - HORIZON;
+    float h = PLAY_HEIGHT - HORIZON;
     float t = (y - HORIZON) / h;
 
     if (t < 0.03f) return 10.0f / 10.0f;
@@ -28,7 +28,7 @@ static Rectangle GetPlayerRect(struct Player *player) {
     float playerHeight = 70.0f;
 
     return (Rectangle){playerScreenX - playerWidth / 1.7f,
-                       SCREEN_HEIGHT - 10.0f - playerHeight,
+                       PLAY_HEIGHT - 10.0f - playerHeight,
                        playerWidth,
                        playerHeight};
 }
@@ -40,7 +40,7 @@ static float GetTrackCurveAmount(struct Player *player, struct Track *track, flo
         return curveAmount;
     }
 
-    for (int cy = SCREEN_HEIGHT; cy >= (int)y; cy--) {
+    for (int cy = PLAY_HEIGHT; cy >= (int)y; cy--) {
         float cscale = (float)(cy - HORIZON) / HORIZON;
         float cdynamicY = (cy == HORIZON) ? 0.1f : (float)(cy - HORIZON);
         float cprojectZ = 800.0f / cdynamicY;
@@ -64,7 +64,7 @@ static bool GetEnemyRect(struct Player *player, struct Enemy *enemy, struct Trac
 
     float y = HORIZON + 800.0f / deltaZ;
 
-    if (y <= HORIZON || y >= SCREEN_HEIGHT) {
+    if (y <= HORIZON || y >= PLAY_HEIGHT) {
         return false;
     }
 
