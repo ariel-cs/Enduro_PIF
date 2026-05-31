@@ -21,6 +21,7 @@ GameState *init_game(void){  //inicia o jogo zera pontuação cria pista e inimi
     state->logo_timer = 0.0f;
     state->elapsed_time = 0.0f;
     state->is_paused = false;
+    state->crashed_this_frame = false;
     state->day = 1;
     state->day_timer = DAY_DURATION;
     state->cars_to_pass = 200; // meta do dia 1
@@ -74,6 +75,8 @@ void update_game(GameState *state, float dt){
 
         case STATE_PLAYING: {
 
+            state->crashed_this_frame = false;
+
             int trackIndex = ((int)state->player->z) % TRACK_LENGTH;
             float trackCurve = state->track->segments[trackIndex].curve;
 
@@ -102,6 +105,7 @@ void update_game(GameState *state, float dt){
 
             if (CheckPlayerEnemyTrackCollisions(state->player, state->enemies, state->track)) {
                 state->player->speed *= 0.35f; // desaceleração na batida nesse caso perde 35% da velocidade
+                state->crashed_this_frame = true; // dispara o SFX de batida
             }
 
             if(state->day_timer <= 0.0f){

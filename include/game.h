@@ -32,6 +32,7 @@ typedef struct {
     float elapsed_time;
     float logo_timer;
     bool is_paused;
+    bool crashed_this_frame; // sinaliza batida na traseira p/ tocar o SFX
     char player_name[10];
     int name_length;
 } GameState;

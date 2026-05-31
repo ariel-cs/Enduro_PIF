@@ -6,11 +6,16 @@
 #include "enemy.h"
 #include "collision.h"
 #include "score.h"
+#include "audio.h"
 #include <stdbool.h>
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Enduro");
+  InitAudioDevice();
   SetTargetFPS(60);
+
+  AudioEngine audio;
+  InitAudio(&audio);
 
   Image img = LoadImage("assets/LOGO.png");
   ImageResize(&img, 294, 110);
@@ -29,6 +34,7 @@ int main(void) {
   ScoreEntry top_scores[5];
   int top_scores_count = 0;
   bool scores_loaded = false;
+  bool wasCrashing = false;
 
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
@@ -37,9 +43,17 @@ int main(void) {
         change_state(game, STATE_MENU);
     }
     else if (game->current_state == STATE_MENU) {
-        if (IsKeyPressed(KEY_DOWN)|| IsKeyPressed(KEY_UP)) {
-            menuSelectdOption = !menuSelectdOption;
+        if (IsKeyPressed(KEY_DOWN)) menuSelectdOption = (menuSelectdOption + 1) % 3;
+        if (IsKeyPressed(KEY_UP))   menuSelectdOption = (menuSelectdOption + 2) % 3;
+
+        // Volume
+        if (menuSelectdOption == 1) {
+            if (IsKeyPressed(KEY_RIGHT)) audio.masterVolume += 0.1f;
+            if (IsKeyPressed(KEY_LEFT))  audio.masterVolume -= 0.1f;
+            if (audio.masterVolume > 1.0f) audio.masterVolume = 1.0f;
+            if (audio.masterVolume < 0.0f) audio.masterVolume = 0.0f;
         }
+
         if (IsKeyPressed(KEY_ENTER)){
             if (menuSelectdOption == 0){
 
@@ -51,11 +65,26 @@ int main(void) {
 
                 change_state(game, STATE_PLAYING);
             }
-            else break;
+            else if (menuSelectdOption == 2) break;
         }
     }
 
     update_game(game, dt);
+
+    // SFX de batida na traseira: só dispara quando a colisão começa.
+    if (game->crashed_this_frame && !wasCrashing) {
+        PlayCrashSound(&audio);
+    }
+    wasCrashing = game->crashed_this_frame;
+
+    float speedRatio = game->player->speed / game->player->maxSpeed;
+    float audioGain = (game->current_state == STATE_PLAYING) ? 1.0f : 0.0f;
+    // Prévia audível enquanto ajusta o volume no menu (meia aceleração).
+    if (game->current_state == STATE_MENU && menuSelectdOption == 1) {
+        speedRatio = 0.5f;
+        audioGain = 1.0f;
+    }
+    UpdateAudio(&audio, speedRatio, audioGain);
 
     BeginDrawing();
     if (game->current_state == STATE_LOGO){
@@ -73,10 +102,13 @@ int main(void) {
     else if (game->current_state == STATE_MENU) {
         ClearBackground(BLACK);
         DrawText("MENU PRINCIPAL", 280, 150, 30, RED);
-        Color colorOpt1 = (menuSelectdOption == 0) ? YELLOW : WHITE;
-        Color colorOpt2 = (menuSelectdOption == 1) ? YELLOW : GRAY;
-        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 280, 280, 22, colorOpt1);
-        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 1) ? ">" : " "), 280, 340, 22, colorOpt2);
+        Color colorOpt0 = (menuSelectdOption == 0) ? YELLOW : WHITE;
+        Color colorOpt1 = (menuSelectdOption == 1) ? YELLOW : WHITE;
+        Color colorOpt2 = (menuSelectdOption == 2) ? YELLOW : GRAY;
+        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 280, 280, 22, colorOpt0);
+        DrawText(TextFormat("%s VOLUME  < %3d%% >", (menuSelectdOption == 1) ? ">" : " ",
+                            (int)(audio.masterVolume * 100.0f)), 280, 340, 22, colorOpt1);
+        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 2) ? ">" : " "), 280, 400, 22, colorOpt2);
     }
     else if (game->current_state == STATE_PLAYING) {
         ClearBackground(RAYWHITE);
@@ -147,6 +179,8 @@ int main(void) {
   UnloadTexture(logotex);
   UnloadTexture(game->player->texture);
   free_game(game);
+  UnloadAudio(&audio);
+  CloseAudioDevice();
   CloseWindow();
   return 0;
 }
