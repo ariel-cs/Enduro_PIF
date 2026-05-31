@@ -3,6 +3,7 @@
 
 #define ENGINE_LOOP "assets/sfx/engine_loop.wav"
 #define WIND_LOOP   "assets/sfx/wind_loop.wav"
+#define CRASH_SFX   "assets/sfx/crash.wav"
 
 static float clampf(float v, float lo, float hi) {
     if (v < lo) return lo;
@@ -16,6 +17,7 @@ void InitAudio(AudioEngine *audio) {
     // Carrega como sons estáticos na RAM.
     audio->engine = LoadSound(ENGINE_LOOP);
     audio->wind   = LoadSound(WIND_LOOP);
+    audio->crash  = LoadSound(CRASH_SFX);
     SetSoundVolume(audio->engine, 0.0f);
     SetSoundVolume(audio->wind,   0.0f);
 
@@ -40,9 +42,17 @@ void UpdateAudio(AudioEngine *audio, float ratio, float gain) {
     SetSoundVolume(audio->wind, clampf(gain * 0.15f * ratio * ratio, 0.0f, 1.0f));
 }
 
+// Toca o som de batida quando o jogador acerta a traseira de um carro.
+void PlayCrashSound(AudioEngine *audio) {
+    SetSoundVolume(audio->crash, clampf(audio->masterVolume, 0.0f, 1.0f));
+    PlaySound(audio->crash);
+}
+
 void UnloadAudio(AudioEngine *audio) {
     StopSound(audio->engine);
     StopSound(audio->wind);
+    StopSound(audio->crash);
     UnloadSound(audio->engine);
     UnloadSound(audio->wind);
+    UnloadSound(audio->crash);
 }

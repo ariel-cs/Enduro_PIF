@@ -7,6 +7,7 @@
 typedef struct {
     Sound engine;
     Sound wind;
+    Sound crash;
 
     float masterVolume;
 } AudioEngine;
@@ -14,6 +15,7 @@ typedef struct {
 // Estados de Som.
 void InitAudio(AudioEngine *audio);
 void UpdateAudio(AudioEngine *audio, float ratio, float gain);
+void PlayCrashSound(AudioEngine *audio); // batida na traseira de outro carro
 void UnloadAudio(AudioEngine *audio);
 
 #endif

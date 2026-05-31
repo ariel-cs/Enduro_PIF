@@ -34,6 +34,7 @@ int main(void) {
   ScoreEntry top_scores[5];
   int top_scores_count = 0;
   bool scores_loaded = false;
+  bool wasCrashing = false;
 
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
@@ -69,6 +70,12 @@ int main(void) {
     }
 
     update_game(game, dt);
+
+    // SFX de batida na traseira: só dispara quando a colisão começa.
+    if (game->crashed_this_frame && !wasCrashing) {
+        PlayCrashSound(&audio);
+    }
+    wasCrashing = game->crashed_this_frame;
 
     float speedRatio = game->player->speed / game->player->maxSpeed;
     float audioGain = (game->current_state == STATE_PLAYING) ? 1.0f : 0.0f;
