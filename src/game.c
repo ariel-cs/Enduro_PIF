@@ -81,6 +81,7 @@ void update_game(GameState *state, float dt){
             float trackCurve = state->track->segments[trackIndex].curve;
 
             UpdatePlayer(state->player, trackCurve);
+            UpdateTrackParallax(state->track, state->player, dt);
             UpdateEnemies(state->enemies, dt, state->player->z);
 
             state->day_timer -= dt;
@@ -162,6 +163,7 @@ void free_game(GameState *state){
         free(state->player);
     }
     if (state->track != NULL) {
+        FreeTrack(state->track);
         free(state->track);
     }
     if (state->enemies != NULL) {

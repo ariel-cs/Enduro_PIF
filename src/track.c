@@ -3,6 +3,29 @@
 #include "track.h"
 #include "config.h"
 
+static const char *BACKGROUND_FILES[PARALLAX_LAYERS] = {
+    "assets/background/8.png",
+    "assets/background/7.png",
+    "assets/background/6.png",
+    "assets/background/4.png",
+    "assets/background/3.png",
+};
+
+static const float BACKGROUND_PARALLAX[PARALLAX_LAYERS] = {
+    0.0f, 0.10f, 0.16f, 0.34f, 0.48f
+};
+
+static const float BACKGROUND_SCALE[PARALLAX_LAYERS] = {
+    1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+};
+
+static const float BACKGROUND_Y_OFFSET[PARALLAX_LAYERS] = {
+    0.0f, 100.0f, 100.0f, 50.0f, 50.0f
+};
+
+#define BACKGROUND_CURVE_DEADZONE 0.05f
+#define BACKGROUND_SCROLL_FORCE 420.0f
+
 static float alisar(float t) {
     if (t < 0.0f) return 0.0f;
     if (t > 1.0f) return 1.0f;
@@ -14,8 +37,14 @@ static float progresso(int i, float inicio, float fim) {
 }
 
 void InitTrack(struct Track *track){
-    for (int i = 0; i < TRACK_LENGTH; i++) {
+    track->backgroundOffset = 0.0f;
 
+    for (int i = 0; i < PARALLAX_LAYERS; i++) {
+        track->background[i] = LoadTexture(BACKGROUND_FILES[i]);
+        SetTextureFilter(track->background[i], TEXTURE_FILTER_POINT);
+    }
+
+    for (int i = 0; i < TRACK_LENGTH; i++) {
         if (i < TRACK_LENGTH/7.5) track->segments[i].curve = 0.0f;
         else if (i < TRACK_LENGTH/5.5){
             float t = progresso(i, TRACK_LENGTH/7.5f, TRACK_LENGTH/5.5f);
@@ -69,8 +98,54 @@ void InitTrack(struct Track *track){
     }
 }
 
+static float GetBackgroundCurve(struct Track *track, struct Player *player) {
+    int trackIndex = ((int)player->z) % TRACK_LENGTH;
+    if (trackIndex < 0) trackIndex += TRACK_LENGTH;
+    return track->segments[trackIndex].curve;
+}
+
+void UpdateTrackParallax(struct Track *track, struct Player *player, float dt) {
+    float curve = GetBackgroundCurve(track, player);
+
+    if (curve > -BACKGROUND_CURVE_DEADZONE && curve < BACKGROUND_CURVE_DEADZONE) {
+        return;
+    }
+
+    track->backgroundOffset += curve * player->speed * dt * BACKGROUND_SCROLL_FORCE;
+}
+
+static void DrawParallaxBackground(struct Track *track) {
+    float skyHeight = HORIZON;
+
+    for (int i = 0; i < PARALLAX_LAYERS; i++) {
+        Texture2D texture = track->background[i];
+
+        if (texture.id == 0) {
+            continue;
+        }
+
+        float scale = (skyHeight / texture.height) * BACKGROUND_SCALE[i];
+        float destW = texture.width * scale;
+        float destH = texture.height * scale;
+        float layerOffset = track->backgroundOffset * BACKGROUND_PARALLAX[i];
+        float x = fmodf(-layerOffset, destW);
+
+        if (x > 0.0f) {
+            x -= destW;
+        }
+
+        Rectangle src = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
+
+        for (; x < SCREEN_WIDTH; x += destW) {
+            Rectangle dest = {x, BACKGROUND_Y_OFFSET[i], destW, destH};
+            DrawTexturePro(texture, src, dest, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
+        }
+    }
+}
+
 void DrawTrack(struct Track *track,struct Player *player){
     DrawRectangle(0, 0, SCREEN_WIDTH, HORIZON, SKYBLUE);
+    DrawParallaxBackground(track);
     DrawRectangle(0, HORIZON, SCREEN_WIDTH, HORIZON, GREEN);
 
     float curveAmout = 0.0f;
@@ -101,5 +176,13 @@ void DrawTrack(struct Track *track,struct Player *player){
         DrawLine(centerX - roadWidth/2 - zebraWidth, y, centerX - roadWidth/2, y, colorZebra);
         DrawLine(centerX - roadWidth/2, y, centerX + roadWidth/2, y, colorRoad);
         DrawLine(centerX + roadWidth/2, y, centerX + roadWidth/2 + zebraWidth, y, colorZebra);
+    }
+}
+
+void FreeTrack(struct Track *track) {
+    for (int i = 0; i < PARALLAX_LAYERS; i++) {
+        if (track->background[i].id != 0) {
+            UnloadTexture(track->background[i]);
+        }
     }
 }
