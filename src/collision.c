@@ -4,7 +4,7 @@
 #include "collision.h"
 #include "config.h"
 
-#define ENEMY_HITBOX_WIDTH_SCALE 0.80f
+#define ENEMY_HITBOX_WIDTH_SCALE 0.60f
 #define ENEMY_HITBOX_HEIGHT_SCALE 0.80f
 #define ENEMY_HITBOX_OFFSET_X_RATIO -0.08f
 

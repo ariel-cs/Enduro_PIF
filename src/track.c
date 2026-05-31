@@ -9,22 +9,26 @@ static const char *BACKGROUND_FILES[PARALLAX_LAYERS] = {
     "assets/background/6.png",
     "assets/background/4.png",
     "assets/background/3.png",
+    "assets/background/2.png",
 };
 
 static const float BACKGROUND_PARALLAX[PARALLAX_LAYERS] = {
-    0.0f, 0.10f, 0.16f, 0.34f, 0.48f
+    0.0f, 0.10f, 0.16f, 0.34f, 0.48f, 0.48f
 };
 
 static const float BACKGROUND_SCALE[PARALLAX_LAYERS] = {
-    1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.5f
 };
 
 static const float BACKGROUND_Y_OFFSET[PARALLAX_LAYERS] = {
-    0.0f, 100.0f, 100.0f, 50.0f, 50.0f
+    0.0f, 100.0f, 100.0f, 40.0f, 30.0f, 155.0f
 };
+
+
 
 #define BACKGROUND_CURVE_DEADZONE 0.05f
 #define BACKGROUND_SCROLL_FORCE 420.0f
+#define BACKGROUND_TURN_SWAY 70.0f
 
 static float alisar(float t) {
     if (t < 0.0f) return 0.0f;
@@ -114,7 +118,7 @@ void UpdateTrackParallax(struct Track *track, struct Player *player, float dt) {
     track->backgroundOffset += curve * player->speed * dt * BACKGROUND_SCROLL_FORCE;
 }
 
-static void DrawParallaxBackground(struct Track *track) {
+static void DrawParallaxBackground(struct Track *track, struct Player *player) {
     float skyHeight = HORIZON;
 
     for (int i = 0; i < PARALLAX_LAYERS; i++) {
@@ -127,7 +131,8 @@ static void DrawParallaxBackground(struct Track *track) {
         float scale = (skyHeight / texture.height) * BACKGROUND_SCALE[i];
         float destW = texture.width * scale;
         float destH = texture.height * scale;
-        float layerOffset = track->backgroundOffset * BACKGROUND_PARALLAX[i];
+        float turnOffset = player->x * BACKGROUND_TURN_SWAY;
+        float layerOffset = (track->backgroundOffset + turnOffset) * BACKGROUND_PARALLAX[i];
         float x = fmodf(-layerOffset, destW);
 
         if (x > 0.0f) {
@@ -145,8 +150,8 @@ static void DrawParallaxBackground(struct Track *track) {
 
 void DrawTrack(struct Track *track,struct Player *player){
     DrawRectangle(0, 0, SCREEN_WIDTH, HORIZON, SKYBLUE);
-    DrawParallaxBackground(track);
-    DrawRectangle(0, HORIZON, SCREEN_WIDTH, HORIZON, GREEN);
+    DrawParallaxBackground(track, player);
+    DrawRectangle(0, HORIZON, SCREEN_WIDTH, HORIZON, (Color){61, 130, 54, 255});
 
     float curveAmout = 0.0f;
     float cameraTurn = player->x * -100.0f;

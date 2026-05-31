@@ -5,7 +5,7 @@
 #include "player.h"
 
 #define TRACK_LENGTH 1000
-#define PARALLAX_LAYERS 5
+#define PARALLAX_LAYERS 6
 
 typedef struct{
     float curve;
