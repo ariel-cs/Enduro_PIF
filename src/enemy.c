@@ -35,13 +35,9 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_MIN_BLOCK_DISTANCE 70.0f
 
 static float GetEnemyLaneX(int faixa) {
-    if (faixa < 0){
-    return (-1) * 1.0f;
-    }
-    if (faixa < 0){
-    return (0) * 0.7f;
-    }
-    return 1 * 0.7f;
+    if (faixa < 0) faixa = 0;
+    if (faixa > 2) faixa = 2;
+    return (faixa - 1) * 0.7f;
 }
 
 static int GetEnemyLaneFromX(float x) {
