@@ -151,7 +151,7 @@ void DrawTrack(struct Track *track,struct Player *player){
     float curveAmout = 0.0f;
     float cameraTurn = player->x * -100.0f;
 
-    for (int y = SCREEN_HEIGHT; y >= HORIZON; y--) {
+    for (int y = PLAY_HEIGHT; y >= HORIZON; y--) {
         float scale = (float)(y - HORIZON) / HORIZON;
         float dynamicY = (y == HORIZON) ? 0.1f: (float)(y - HORIZON);
         float projectZ = 800.0f / dynamicY;

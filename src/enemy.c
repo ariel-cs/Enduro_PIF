@@ -44,7 +44,7 @@ static int GetEnemyLaneFromX(float x) {
 }
 
 static int GetEnemyRowIndex(float y) {
-    float h = SCREEN_HEIGHT - HORIZON;
+    float h = PLAY_HEIGHT - HORIZON;
     float t = (y - HORIZON) / h; // 0.0 = longe, 1.0 = perto
     
     if (t < 0.03f) return 0;
@@ -193,10 +193,10 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
         float deltaZ = enemy->z - player->z;
         if (deltaZ > 0.1f) {
             float y = HORIZON + 800.0f / deltaZ;
-            if (y > HORIZON && y < SCREEN_HEIGHT) {
+            if (y > HORIZON && y < PLAY_HEIGHT) {
                 float scale = (y - HORIZON) / HORIZON;
                 float curveAmount = 0.0f;
-                for (int cy = SCREEN_HEIGHT; cy >= (int)y; cy--) {
+                for (int cy = PLAY_HEIGHT; cy >= (int)y; cy--) {
                     float cscale = (float)(cy - HORIZON) / HORIZON;
                     float cdynamicY = (cy == HORIZON) ? 0.1f : (float)(cy - HORIZON);
                     float cprojectZ = 800.0f / cdynamicY;
