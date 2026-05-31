@@ -23,9 +23,20 @@ int main(void) {
   UnloadImage(img);
   SetTextureFilter(logotex, TEXTURE_FILTER_POINT);
 
+  Image menuImg = LoadImage("assets/Enduro_metade.png");
+  Texture2D menuImgtex = LoadTextureFromImage(menuImg);
+  UnloadImage(menuImg);
+
+  Image titleImg = LoadImage("assets/Enduro_inteira.png");
+  ImageResize(&titleImg, 800, 600);
+  Texture2D titleImgtex = LoadTextureFromImage(titleImg);
+  UnloadImage(titleImg);
+
   int menuSelectdOption = 0;
   GameState *game = init_game();
   if (!game) {
+    UnloadTexture(titleImgtex);
+    UnloadTexture(menuImgtex);
     UnloadTexture(logotex);
     CloseWindow();
     return 1;
@@ -96,19 +107,31 @@ int main(void) {
     }
     else if (game->current_state == STATE_TITLE) {
         ClearBackground(BLACK);
-        DrawText("Enduro", 340, 280, 40, WHITE);
-        DrawText("PRESSIONE ENTER", 340, 320, 16, GRAY);
+        Rectangle dest1 = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+        Rectangle src1 = { 0, 0, titleImgtex.width, titleImgtex.height };
+        DrawTexturePro(titleImgtex, src1, dest1, (Vector2){0,0}, 0.0f, WHITE);
+
+        DrawText("Enduro", 52, 82, 80, BLACK);
+        DrawText("Enduro", 50, 80, 80, WHITE);
+        DrawText("PRESSIONE ENTER", 532, 522, 22, BLACK);
+        DrawText("PRESSIONE ENTER", 530, 520, 22, YELLOW);
     }
     else if (game->current_state == STATE_MENU) {
         ClearBackground(BLACK);
-        DrawText("MENU PRINCIPAL", 280, 150, 30, RED);
+
+        Rectangle dest = { 0, 0, SCREEN_WIDTH/2, SCREEN_HEIGHT};
+        Rectangle src = { 0, 0, menuImgtex.width, menuImgtex.height };
+        DrawTexturePro(menuImgtex, src, dest, (Vector2){0,0}, 0.0f, WHITE);
+
+        DrawText("MENU PRINCIPAL", 450, 150, 30, RED);
         Color colorOpt0 = (menuSelectdOption == 0) ? YELLOW : WHITE;
         Color colorOpt1 = (menuSelectdOption == 1) ? YELLOW : WHITE;
         Color colorOpt2 = (menuSelectdOption == 2) ? YELLOW : GRAY;
-        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 280, 280, 22, colorOpt0);
+        DrawText(TextFormat("%s INICIAR CORRIDA", (menuSelectdOption == 0) ? ">" : " "), 450, 280, 22, colorOpt0);
         DrawText(TextFormat("%s VOLUME  < %3d%% >", (menuSelectdOption == 1) ? ">" : " ",
-                            (int)(audio.masterVolume * 100.0f)), 280, 340, 22, colorOpt1);
-        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 2) ? ">" : " "), 280, 400, 22, colorOpt2);
+                            (int)(audio.masterVolume * 100.0f)), 450, 340, 22, colorOpt1);
+        DrawText(TextFormat("%s SAIR DO JOGO", (menuSelectdOption == 2) ? ">" : " "), 450, 400, 22, colorOpt2);
+
     }
     else if (game->current_state == STATE_PLAYING) {
         ClearBackground(RAYWHITE);
@@ -132,7 +155,7 @@ int main(void) {
         DrawText(TextFormat("DIA: %d", game->day), 600, 80, 20, BLACK);
 
         if (faltam > 0) {
-            DrawText(TextFormat("FALTAM: %d", faltam), 350, 20, 30, RED);
+            DrawText(TextFormat("FALTAM: %d", faltam), 320, 20, 30, RED);
         }
         else {
             DrawText(TextFormat("CLASSIFICADO!"), 320, 20, 30, DARKGREEN);
@@ -176,6 +199,8 @@ int main(void) {
     EndDrawing();
   }
 
+  UnloadTexture(titleImgtex);
+  UnloadTexture(menuImgtex);
   UnloadTexture(logotex);
   UnloadTexture(game->player->texture);
   free_game(game);
