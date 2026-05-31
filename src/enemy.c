@@ -30,17 +30,47 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_ROW_WHEEL_A 7
 #define ENEMY_ROW_WHEEL_B 8
 #define ENEMY_WHEEL_FRAME_SPEED 0.1f  // segundos por quadro
+#define ENEMY_SPAWN_ATTEMPTS 12
+#define ENEMY_MIN_SAME_LANE_DISTANCE 95.0f
+#define ENEMY_MIN_BLOCK_DISTANCE 70.0f
 
 static float GetEnemyLaneX(int faixa) {
-    if (faixa < 0) faixa = 0;
-    if (faixa > 2) faixa = 2;
-    return (faixa - 1) * 0.7f;
+    if (faixa < 0){
+    return (-1) * 1.0f;
+    }
+    if (faixa < 0){
+    return (0) * 0.7f;
+    }
+    return 1 * 0.7f;
 }
 
 static int GetEnemyLaneFromX(float x) {
     if (x < -0.25f) return 0;
     if (x > 0.25f) return 2;
     return 1;
+}
+
+static bool IsEnemySpawnSafe(struct EnemyList *list, float z, int faixa) {
+    bool blockedLanes[3] = {false, false, false};
+    blockedLanes[faixa] = true;
+
+    struct Enemy *enemy = list->head;
+
+    while (enemy != NULL) {
+        float distance = fabsf(enemy->z - z);
+
+        if (enemy->faixa == faixa && distance < ENEMY_MIN_SAME_LANE_DISTANCE) {
+            return false;
+        }
+
+        if (distance < ENEMY_MIN_BLOCK_DISTANCE && enemy->faixa >= 0 && enemy->faixa < 3) {
+            blockedLanes[enemy->faixa] = true;
+        }
+
+        enemy = enemy->next;
+    }
+
+    return !(blockedLanes[0] && blockedLanes[1] && blockedLanes[2]);
 }
 
 static int GetEnemyRowIndex(float y) {
@@ -101,13 +131,29 @@ void InitEnemyList(struct EnemyList *list) {
 }
 
 void SpawnEnemy(struct EnemyList *list, float playerZ) {
+    float z = 0.0f;
+    int faixa = 0;
+
+    for (int i = 0; i < ENEMY_SPAWN_ATTEMPTS; i++) {
+        z = playerZ + 200.0f + (rand() % 450);
+        faixa = rand() % 3;
+
+        if (IsEnemySpawnSafe(list, z, faixa)) {
+            break;
+        }
+
+        if (i == ENEMY_SPAWN_ATTEMPTS - 1) {
+            return;
+        }
+    }
+
     struct Enemy *enemy = (struct Enemy *)malloc(sizeof(struct Enemy));
     if (enemy == NULL) {
         return;
     }
 
-    enemy->z = playerZ + 200.0f + (rand() % 300);
-    enemy->faixa = rand() % 3;
+    enemy->z = z;
+    enemy->faixa = faixa;
     enemy->x = GetEnemyLaneX(enemy->faixa);
     enemy->speed = 0.05f + ((rand() % 26) / 100.0f);
     enemy->passou = false;
@@ -124,6 +170,12 @@ void SpawnEnemyAt(struct EnemyList *list, float z, float x, float speed) {
 
     enemy->z = z;
     enemy->faixa = GetEnemyLaneFromX(x);
+
+    if (!IsEnemySpawnSafe(list, enemy->z, enemy->faixa)) {
+        free(enemy);
+        return;
+    }
+
     enemy->x = GetEnemyLaneX(enemy->faixa);
     enemy->speed = speed;
     enemy->passou = false;
