@@ -38,7 +38,7 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_VISIBLE_AHEAD_DISTANCE 520.0f
 #define ENEMY_MIN_SAME_LANE_DISTANCE 55.0f
 #define ENEMY_MIN_BLOCK_DISTANCE 38.0f
-#define ENEMY_DESPAWN_BEHIND_DISTANCE 30.0f
+#define ENEMY_DESPAWN_BEHIND_DISTANCE 90.0f
 
 static float GetEnemyLaneX(int faixa) {
     if (faixa < 0) faixa = 0;

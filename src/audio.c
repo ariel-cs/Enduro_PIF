@@ -87,7 +87,7 @@ static void PlayMusic(AudioEngine *audio, int music) {
 void UpdateMusicForState(AudioEngine *audio, int state) {
     if (state == STATE_TITLE || state == STATE_MENU) PlayMusic(audio, MUSIC_MENU);
     else if (state == STATE_COUNTDOWN || state == STATE_PLAYING) PlayMusic(audio, MUSIC_PLAY);
-    else if (state == STATE_TOP_SCORES) PlayMusic(audio, MUSIC_SCORE);
+    else if (state == STATE_GAME_OVER || state == STATE_TOP_SCORES) PlayMusic(audio, MUSIC_SCORE);
     else {
         StopMusic(audio);
         audio->currentMusic = MUSIC_NONE;
