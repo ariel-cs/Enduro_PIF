@@ -27,7 +27,7 @@ GameState *init_game(void){  //inicia o jogo zera pontuação cria pista e inimi
     state->crashed_this_frame = false;
     state->day = 1;
     state->day_timer = DAY_DURATION;
-    state->cars_to_pass = 200; // meta do dia 1
+    state->cars_to_pass = 150; // meta do dia 1
     state->cars_passed_today = 0;
     state->score = 0;
     state->name_length = 0;
@@ -136,8 +136,8 @@ void update_game(GameState *state, float dt){
                     state->day++;
                     state->day_timer = DAY_DURATION;
                     state->cars_passed_today = 0;
-                    if (state->day == 2) state->cars_to_pass = 300; //meta dia 2
-                    else state->cars_to_pass = 400; //meta dia 3 para frente
+                    if (state->day == 2) state->cars_to_pass = 200; //meta dia 2
+                    else state->cars_to_pass = 250; //meta dia 3 para frente
                 }
                 else {
                     state->name_length = 0;
@@ -181,7 +181,7 @@ void update_game(GameState *state, float dt){
 void reset_game(GameState *state){
     state->day = 1;
     state->day_timer = DAY_DURATION;
-    state -> cars_to_pass = 200;
+    state -> cars_to_pass = 150;
     state->cars_passed_today = 0;
     state->score = 0;
 
