@@ -105,11 +105,13 @@ void DrawMenu(Texture2D menuImg, int selectedOption, float masterVolume) {
     DrawText("MENU PRINCIPAL", 450, 150, 30, RED);
     Color colorOpt0 = (selectedOption == 0) ? YELLOW : WHITE;
     Color colorOpt1 = (selectedOption == 1) ? YELLOW : WHITE;
-    Color colorOpt2 = (selectedOption == 2) ? YELLOW : GRAY;
+    Color colorOpt2 = (selectedOption == 2) ? YELLOW : WHITE;
+    Color colorOpt3 = (selectedOption == 3) ? YELLOW : GRAY;
     DrawText(TextFormat("%s INICIAR CORRIDA", (selectedOption == 0) ? ">" : " "), 450, 280, 22, colorOpt0);
     DrawText(TextFormat("%s VOLUME  < %3d%% >", (selectedOption == 1) ? ">" : " ",
                         (int)(masterVolume * 100.0f)), 450, 340, 22, colorOpt1);
-    DrawText(TextFormat("%s SAIR DO JOGO", (selectedOption == 2) ? ">" : " "), 450, 400, 22, colorOpt2);
+    DrawText(TextFormat("%s RECORDES", (selectedOption == 2) ? ">" : " "), 450, 400, 22, colorOpt2);
+    DrawText(TextFormat("%s SAIR DO JOGO", (selectedOption == 3) ? ">" : " "), 450, 460, 22, colorOpt3);
 }
 
 void DrawGameOverScreen(const GameState *game) {

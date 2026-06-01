@@ -149,12 +149,10 @@ void update_game(GameState *state, float dt){
             }
         }break;
 
-        case STATE_TOP_SCORES: {
-            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_SPACE)) {
-                //importante ainda falta coisa
-                change_state(state, STATE_MENU);
-            }
-        } break;
+        case STATE_TOP_SCORES:
+            // Entrada da tela de recordes é tratada no loop principal (main.c),
+            // evitando que o mesmo ENTER que abriu a tela a feche no mesmo frame.
+            break;
         default: break;
     }
 }
