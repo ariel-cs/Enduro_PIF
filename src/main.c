@@ -72,11 +72,7 @@ int main(void) {
         if (IsKeyPressed(KEY_ENTER)){
             if (menuSelectdOption == 0){
 
-                game->day_timer = DAY_DURATION;
-                game->day = 1;
-                game->cars_to_pass = 200;
-                game->cars_passed_today = 0;
-                game->score = 0;
+                reset_game(game);
 
                 change_state(game, STATE_PLAYING);
             }
