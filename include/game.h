@@ -42,6 +42,7 @@ typedef struct {
 
 // API da maquina de estados
 GameState *init_game(void);
+void reset_game(GameState *state);
 void update_game(GameState *state, float dt);
 void change_state(GameState *state, GameStateType new_state);
 void free_game(GameState *state);

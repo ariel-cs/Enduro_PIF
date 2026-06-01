@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #include "game.h"
@@ -169,13 +170,32 @@ void update_game(GameState *state, float dt){
             }
         }break;
 
-        case STATE_TOP_SCORES: {
-            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_SPACE)) {
-                //importante ainda falta coisa
-                change_state(state, STATE_MENU);
-            }
-        } break;
+        case STATE_TOP_SCORES:
+            // Entrada da tela de recordes é tratada no loop principal (main.c),
+            // evitando que o mesmo ENTER que abriu a tela a feche no mesmo frame.
+            break;
         default: break;
+    }
+}
+
+void reset_game(GameState *state){
+    state->day = 1;
+    state->day_timer = DAY_DURATION;
+    state -> cars_to_pass = 200;
+    state->cars_passed_today = 0;
+    state->score = 0;
+
+    state->player->z = 0.0f;
+    state->player->x = 0.0f;
+    state->player->speed = 0.0f;
+
+    FreeEnemyList(state->enemies);
+    InitEnemyList(state->enemies);
+    for (int i = 0; i < 18; i++) {
+        float z = 100.0f + (rand() % 1100);  // 100 a 1200
+        float x = ((rand() % 1601) - 800) / 1000.0f;
+        float speed = 0.05f + ((rand() % 26) / 100.0f);
+        SpawnEnemyAt(state->enemies, z, x, speed);
     }
 }
 

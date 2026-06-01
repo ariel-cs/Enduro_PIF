@@ -60,11 +60,11 @@ int main(void) {
     }
     else if (game->current_state == STATE_MENU) {
         if (IsKeyPressed(KEY_DOWN)) {
-            menuSelectdOption = (menuSelectdOption + 1) % 3;
+            menuSelectdOption = (menuSelectdOption + 1) % 4;
             PlayMenuSound(&audio);
         }
         if (IsKeyPressed(KEY_UP)) {
-            menuSelectdOption = (menuSelectdOption + 2) % 3;
+            menuSelectdOption = (menuSelectdOption + 3) % 4;
             PlayMenuSound(&audio);
         }
 
@@ -80,17 +80,21 @@ int main(void) {
             PlayMenuSound(&audio);
             if (menuSelectdOption == 0){
 
-                game->day_timer = DAY_DURATION;
-                game->day = 1;
-                game->cars_to_pass = 200;
-                game->cars_passed_today = 0;
-                game->score = 0;
+                reset_game(game);
 
                 change_state(game, STATE_COUNTDOWN);
                 lastCountdownValue = game->countdown_value;
                 PlayCountdownTick(&audio);
             }
-            else if (menuSelectdOption == 2) break;
+            else if (menuSelectdOption == 2){
+                change_state(game, STATE_TOP_SCORES);
+            }
+            else if (menuSelectdOption == 3) break;
+        }
+    }
+    else if (game->current_state == STATE_TOP_SCORES) {
+        if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_SPACE)) {
+            change_state(game, STATE_MENU);
         }
     }
 
@@ -119,8 +123,9 @@ int main(void) {
     }
     UpdateAudio(&audio, speedRatio, audioGain);
 
-    // Lazy loading do ranking: recarrega ao sair do game over.
-    if (game->current_state == STATE_GAME_OVER) {
+    // Lazy loading do ranking: recarrega ao sair do game over ou ao voltar ao menu,
+    // garantindo que a tela de recordes mostre sempre a lista atualizada.
+    if (game->current_state == STATE_GAME_OVER || game->current_state == STATE_MENU) {
         scores_loaded = false;
     }
     else if (game->current_state == STATE_TOP_SCORES && !scores_loaded) {
