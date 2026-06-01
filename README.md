@@ -6,6 +6,8 @@ e desviando dos adversários numa pista com perspectiva pseudo-3D.
 
 Projeto desenvolvido para a disciplina de **Programação Imperativa e Funcional (PIF)**.
 
+[Showcase no Youtube](https://youtu.be/KMFmuuaKFFM)
+
 ## Funcionalidades
 
 - Pista com perspectiva pseudo-3D e curvas.
