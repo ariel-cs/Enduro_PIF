@@ -79,9 +79,9 @@ static void PlayMusic(AudioEngine *audio, int music) {
         if (music == MUSIC_SCORE) PlaySound(audio->scoreMusic);
     }
 
-    SetSoundVolume(audio->menuMusic, clampf(audio->masterVolume * 0.35f, 0.0f, 1.0f));
-    SetSoundVolume(audio->playMusic, clampf(audio->masterVolume * 0.30f, 0.0f, 1.0f));
-    SetSoundVolume(audio->scoreMusic, clampf(audio->masterVolume * 0.35f, 0.0f, 1.0f));
+    SetSoundVolume(audio->menuMusic, clampf(audio->masterVolume * 0.3f, 0.0f, 1.0f));
+    SetSoundVolume(audio->playMusic, clampf(audio->masterVolume * 0.25f, 0.0f, 1.0f));
+    SetSoundVolume(audio->scoreMusic, clampf(audio->masterVolume * 0.3f, 0.0f, 1.0f));
 }
 
 void UpdateMusicForState(AudioEngine *audio, int state) {

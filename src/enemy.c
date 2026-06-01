@@ -38,7 +38,8 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_VISIBLE_AHEAD_DISTANCE 520.0f
 #define ENEMY_MIN_SAME_LANE_DISTANCE 55.0f
 #define ENEMY_MIN_BLOCK_DISTANCE 38.0f
-#define ENEMY_DESPAWN_BEHIND_DISTANCE 90.0f
+#define ENEMY_DESPAWN_BEHIND_DISTANCE 100.0f
+#define ENEMY_DRAW_BOTTOM_MARGIN 140.0f
 
 static float GetEnemyLaneX(int faixa) {
     if (faixa < 0) faixa = 0;
@@ -265,7 +266,7 @@ void DrawEnemies(struct EnemyList *list, struct Player *player, struct Track *tr
         float deltaZ = enemy->z - player->z;
         if (deltaZ > 0.1f) {
             float y = HORIZON + 800.0f / deltaZ;
-            if (y > HORIZON && y < PLAY_HEIGHT) {
+            if (y > HORIZON && y < PLAY_HEIGHT + ENEMY_DRAW_BOTTOM_MARGIN) {
                 float scale = (y - HORIZON) / HORIZON;
                 float curveAmount = 0.0f;
                 for (int cy = PLAY_HEIGHT; cy >= (int)y; cy--) {
