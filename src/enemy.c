@@ -30,20 +30,41 @@ static EnemyRow enemyRows[] = {
 #define ENEMY_ROW_WHEEL_A 7
 #define ENEMY_ROW_WHEEL_B 8
 #define ENEMY_WHEEL_FRAME_SPEED 0.1f  // segundos por quadro
-#define ENEMY_SPAWN_ATTEMPTS 12
-#define ENEMY_MIN_SAME_LANE_DISTANCE 95.0f
-#define ENEMY_MIN_BLOCK_DISTANCE 70.0f
+#define ENEMY_TARGET_VISIBLE_COUNT 18
+#define ENEMY_REFILL_ATTEMPTS 120
+#define ENEMY_SPAWN_ATTEMPTS 24
+#define ENEMY_SPAWN_MIN_DISTANCE 55.0f
+#define ENEMY_SPAWN_RANDOM_RANGE 430
+#define ENEMY_VISIBLE_AHEAD_DISTANCE 520.0f
+#define ENEMY_MIN_SAME_LANE_DISTANCE 55.0f
+#define ENEMY_MIN_BLOCK_DISTANCE 38.0f
+#define ENEMY_DESPAWN_BEHIND_DISTANCE 30.0f
 
 static float GetEnemyLaneX(int faixa) {
     if (faixa < 0) faixa = 0;
     if (faixa > 2) faixa = 2;
-    return (faixa - 1) * 0.7f;
+    return (faixa - 1) * 0.8f;
 }
 
 static int GetEnemyLaneFromX(float x) {
     if (x < -0.25f) return 0;
     if (x > 0.25f) return 2;
     return 1;
+}
+
+static int CountVisibleEnemiesAhead(struct EnemyList *list, float playerZ) {
+    int count = 0;
+    struct Enemy *enemy = list->head;
+
+    while (enemy != NULL) {
+        if (enemy->z > playerZ && enemy->z < playerZ + ENEMY_VISIBLE_AHEAD_DISTANCE) {
+            count++;
+        }
+
+        enemy = enemy->next;
+    }
+
+    return count;
 }
 
 static bool IsEnemySpawnSafe(struct EnemyList *list, float z, int faixa) {
@@ -131,7 +152,7 @@ void SpawnEnemy(struct EnemyList *list, float playerZ) {
     int faixa = 0;
 
     for (int i = 0; i < ENEMY_SPAWN_ATTEMPTS; i++) {
-        z = playerZ + 200.0f + (rand() % 450);
+        z = playerZ + ENEMY_SPAWN_MIN_DISTANCE + (rand() % ENEMY_SPAWN_RANDOM_RANGE);
         faixa = rand() % 3;
 
         if (IsEnemySpawnSafe(list, z, faixa)) {
@@ -196,7 +217,7 @@ void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
 
         enemy->z += enemy->speed;
 
-        if (enemy->z < playerZ - 400.0f) {
+        if (enemy->z < playerZ - ENEMY_DESPAWN_BEHIND_DISTANCE) {
             *current = enemy->next;
             free(enemy);
             list->count--;
@@ -205,11 +226,14 @@ void UpdateEnemies(struct EnemyList *list, float dt, float playerZ) {
         }
     }
 
-    while (list->count < 25) {
+    int refillAttempts = 0;
+    while (CountVisibleEnemiesAhead(list, playerZ) < ENEMY_TARGET_VISIBLE_COUNT && refillAttempts < ENEMY_REFILL_ATTEMPTS) {
         int before = list->count;
         SpawnEnemy(list, playerZ);
+        refillAttempts++;
+
         if (list->count == before) {
-            break; // spawn falhou (malloc), evita laço infinito
+            continue;
         }
     }
 }

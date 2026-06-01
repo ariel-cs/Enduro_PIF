@@ -47,6 +47,7 @@ int main(void) {
   int top_scores_count = 0;
   bool scores_loaded = false;
   bool wasCrashing = false;
+  int lastCountdownValue = -1;
 
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
@@ -58,8 +59,14 @@ int main(void) {
         change_state(game, STATE_MENU);
     }
     else if (game->current_state == STATE_MENU) {
-        if (IsKeyPressed(KEY_DOWN)) menuSelectdOption = (menuSelectdOption + 1) % 3;
-        if (IsKeyPressed(KEY_UP))   menuSelectdOption = (menuSelectdOption + 2) % 3;
+        if (IsKeyPressed(KEY_DOWN)) {
+            menuSelectdOption = (menuSelectdOption + 1) % 3;
+            PlayMenuSound(&audio);
+        }
+        if (IsKeyPressed(KEY_UP)) {
+            menuSelectdOption = (menuSelectdOption + 2) % 3;
+            PlayMenuSound(&audio);
+        }
 
         // Volume
         if (menuSelectdOption == 1) {
@@ -70,6 +77,7 @@ int main(void) {
         }
 
         if (IsKeyPressed(KEY_ENTER)){
+            PlayMenuSound(&audio);
             if (menuSelectdOption == 0){
 
                 game->day_timer = DAY_DURATION;
@@ -78,13 +86,23 @@ int main(void) {
                 game->cars_passed_today = 0;
                 game->score = 0;
 
-                change_state(game, STATE_PLAYING);
+                change_state(game, STATE_COUNTDOWN);
+                lastCountdownValue = game->countdown_value;
+                PlayCountdownTick(&audio);
             }
             else if (menuSelectdOption == 2) break;
         }
     }
 
     update_game(game, dt);
+    UpdateMusicForState(&audio, game->current_state);
+
+    if (game->current_state == STATE_COUNTDOWN && game->countdown_value != lastCountdownValue) {
+        lastCountdownValue = game->countdown_value;
+
+        if (game->countdown_value > 0) PlayCountdownTick(&audio);
+        else PlayCountdownGo(&audio);
+    }
 
     // SFX de batida na traseira: só dispara quando a colisão começa.
     if (game->crashed_this_frame && !wasCrashing) {
@@ -120,6 +138,18 @@ int main(void) {
             break;
         case STATE_MENU:
             DrawMenu(menuImgtex, menuSelectdOption, audio.masterVolume);
+            break;
+        case STATE_COUNTDOWN:
+            ClearBackground(RAYWHITE);
+            DrawTrack(game->track, game->player);
+            DrawPlayer(game->player);
+            DrawEnemies(game->enemies, game->player, game->track);
+            DrawHUD(game);
+            if (game->countdown_value > 0) {
+                DrawText(TextFormat("%d", game->countdown_value), SCREEN_WIDTH / 2 - 24, PLAY_HEIGHT / 2 - 70, 96, YELLOW);
+            } else {
+                DrawText("GO!", SCREEN_WIDTH / 2 - 80, PLAY_HEIGHT / 2 - 70, 80, GREEN);
+            }
             break;
         case STATE_PLAYING:
             ClearBackground(RAYWHITE);

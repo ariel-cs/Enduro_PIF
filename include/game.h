@@ -13,6 +13,7 @@ typedef enum {
     STATE_LOGO,
     STATE_TITLE,
     STATE_MENU,
+    STATE_COUNTDOWN,
     STATE_PLAYING,
     STATE_GAME_OVER,
     STATE_TOP_SCORES
@@ -31,6 +32,8 @@ typedef struct {
     float day_timer;
     float elapsed_time;
     float logo_timer;
+    float countdown_timer;
+    int countdown_value;
     bool is_paused;
     bool crashed_this_frame; // sinaliza batida na traseira p/ tocar o SFX
     char player_name[10];

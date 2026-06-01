@@ -20,6 +20,8 @@ GameState *init_game(void){  //inicia o jogo zera pontuação cria pista e inimi
     state->current_state = STATE_LOGO;
     state->logo_timer = 0.0f;
     state->elapsed_time = 0.0f;
+    state->countdown_timer = 0.0f;
+    state->countdown_value = 3;
     state->is_paused = false;
     state->crashed_this_frame = false;
     state->day = 1;
@@ -40,10 +42,10 @@ GameState *init_game(void){  //inicia o jogo zera pontuação cria pista e inimi
         free(state);
         return NULL;
     }
-    //Simplesmente não tem inimigo nas primeiras 1000 metros então isso aqui conserta!
+    // Preenche a largada sem deixar a pista vazia demais.
     InitEnemyList(state->enemies);
-    for (int i = 0; i < 18; i++) {
-        float z = 100.0f + (rand() % 1100);  // 100 a 1200
+    for (int i = 0; i < 36; i++) {
+        float z = 70.0f + (rand() % 520);
         float x = ((rand() % 1601) - 800) / 1000.0f;
         float speed = 0.05f + ((rand() % 26) / 100.0f);
         SpawnEnemyAt(state->enemies, z, x, speed);
@@ -57,6 +59,12 @@ GameState *init_game(void){  //inicia o jogo zera pontuação cria pista e inimi
 
 void change_state(GameState *state, GameStateType new_state){
     state->current_state = new_state;
+
+    if (new_state == STATE_COUNTDOWN) {
+        state->countdown_timer = 0.0f;
+        state->countdown_value = 3;
+        state->player->speed = 0.0f;
+    }
 }
 
 void update_game(GameState *state, float dt){
@@ -71,6 +79,19 @@ void update_game(GameState *state, float dt){
             break;
 
         case STATE_TITLE:
+            break;
+
+        case STATE_COUNTDOWN:
+            state->countdown_timer += dt;
+
+            if (state->countdown_timer < 1.0f) state->countdown_value = 3;
+            else if (state->countdown_timer < 2.0f) state->countdown_value = 2;
+            else if (state->countdown_timer < 3.0f) state->countdown_value = 1;
+            else state->countdown_value = 0;
+
+            if (state->countdown_timer >= 4.0f) {
+                change_state(state, STATE_PLAYING);
+            }
             break;
 
         case STATE_PLAYING: {
