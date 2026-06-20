@@ -15,6 +15,6 @@
 
 #define DEBUG_HITBOXES 0
 
-#define DAY_DURATION 210.0f
+#define DAY_DURATION 100.0f
 
 #endif

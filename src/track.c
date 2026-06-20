@@ -82,24 +82,6 @@ void InitTrack(struct Track *track){
         }
     }
 
-    for (int repeticao = 0; repeticao < 8; repeticao++) {
-        float curvaSuave[TRACK_LENGTH];
-
-        for (int i = 0; i < TRACK_LENGTH; i++) {
-            int anterior = (i - 1 + TRACK_LENGTH) % TRACK_LENGTH;
-            int proximo = (i + 1) % TRACK_LENGTH;
-
-            curvaSuave[i] = (
-                track->segments[anterior].curve +
-                track->segments[i].curve * 2.0f +
-                track->segments[proximo].curve
-            ) / 4.0f;
-        }
-
-        for (int i = 0; i < TRACK_LENGTH; i++) {
-            track->segments[i].curve = curvaSuave[i];
-        }
-    }
 }
 
 static float GetBackgroundCurve(struct Track *track, struct Player *player) {

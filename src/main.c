@@ -9,11 +9,23 @@
 #include "audio.h"
 #include "ui.h"
 #include <stdbool.h>
+#include <math.h>
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Enduro");
   InitAudioDevice();
   SetTargetFPS(60);
+  int monitor = GetCurrentMonitor();
+  int monitorWidth = GetMonitorWidth(monitor);
+  int monitorHeight = GetMonitorHeight(monitor);
+
+  SetWindowSize(monitorWidth, monitorHeight);
+  ToggleFullscreen();
+
+  RenderTexture2D gameTarget =
+    LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  SetTextureFilter(gameTarget.texture, TEXTURE_FILTER_BILINEAR);
 
   AudioEngine audio;
   InitAudio(&audio);
@@ -39,6 +51,8 @@ int main(void) {
     UnloadTexture(titleImgtex);
     UnloadTexture(menuImgtex);
     UnloadTexture(logotex);
+    UnloadRenderTexture(gameTarget);
+    CloseAudioDevice();
     CloseWindow();
     return 1;
   }
@@ -133,7 +147,10 @@ int main(void) {
         scores_loaded = true;
     }
 
-    BeginDrawing();
+    // O jogo continua sendo desenhado em 800x600. Depois, essa imagem e
+    // ampliada mantendo a proporcao original, sem deformar os graficos.
+    BeginTextureMode(gameTarget);
+    ClearBackground(BLACK);
     switch (game->current_state) {
         case STATE_LOGO:
             DrawLogoScreen(logotex);
@@ -173,12 +190,36 @@ int main(void) {
             DrawTopScoresScreen(top_scores, top_scores_count);
             break;
     }
+    EndTextureMode();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    float scaleX = (float)GetScreenWidth() / SCREEN_WIDTH;
+    float scaleY = (float)GetScreenHeight() / SCREEN_HEIGHT;
+    float scale = fminf(scaleX, scaleY);
+    float drawWidth = SCREEN_WIDTH * scale;
+    float drawHeight = SCREEN_HEIGHT * scale;
+
+    Rectangle source = {
+        0.0f, 0.0f,
+        (float)SCREEN_WIDTH, -(float)SCREEN_HEIGHT
+    };
+    Rectangle destination = {
+        ((float)GetScreenWidth() - drawWidth) / 2.0f,
+        ((float)GetScreenHeight() - drawHeight) / 2.0f,
+        drawWidth, drawHeight
+    };
+
+    DrawTexturePro(gameTarget.texture, source, destination,
+                   (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
     EndDrawing();
   }
 
   UnloadTexture(titleImgtex);
   UnloadTexture(menuImgtex);
   UnloadTexture(logotex);
+  UnloadRenderTexture(gameTarget);
   UnloadTexture(game->player->texture);
   free_game(game);
   UnloadAudio(&audio);
